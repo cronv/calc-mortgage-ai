@@ -50,7 +50,7 @@ export class OffersService {
         .set('term', String(q.termMonths))
         .set('property_type', q.propertyType);
       const res = await firstValueFrom(
-        this.http.get<{ offers: BankOffer[] }>('/api.php', { params }),
+        this.http.get<{ offers: BankOffer[] }>('/api/v1/calculator/match', { params }),
       );
       if (id !== this.requestId) return; // пришёл более свежий запрос
       this.offers.set(res.offers ?? []);
