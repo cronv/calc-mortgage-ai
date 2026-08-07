@@ -1,5 +1,3 @@
-/// <reference lib="webworker" />
-
 import { buildSchedule, PaymentType } from '../core/mortgage-math';
 
 /**
@@ -8,13 +6,25 @@ import { buildSchedule, PaymentType } from '../core/mortgage-math';
  * mortgage-math, чтобы формулы не расходились с синхронным fallback в сервисе.
  */
 interface Task {
-  loan: number;
-  months: number;
-  rate: number;
-  type: PaymentType;
+    loan: number;
+    months: number;
+    rate: number;
+    type: PaymentType;
 }
 
 addEventListener('message', ({ data }: MessageEvent<Task>) => {
-  const { loan, months, rate, type } = data;
-  postMessage(buildSchedule(loan, months, rate, type));
+    try {
+        const { loan, months, rate, type } = data;
+
+        // Валидация входных параметров
+        if (loan <= 0 || months <= 0 || rate <= 0) {
+            postMessage([]);
+            return;
+        }
+
+        postMessage(buildSchedule(loan, months, rate, type));
+    } catch (error) {
+        console.error('Worker error:', error);
+        postMessage([]);
+    }
 });

@@ -32,16 +32,24 @@ final class MatchController extends AbstractController
     #[Route('/match', name: 'api_match', methods: ['GET'])]
     public function match(Request $request): JsonResponse
     {
-        $cost = (float) $request->query->get('cost', '0');
-        $down = (float) $request->query->get('down_payment', '0');
-        $term = (int) $request->query->get('term', '240');
+        // Валидация и нормализация входных параметров
+        $cost = max(100000, (float) $request->query->get('cost', '1500000'));
+        $down = max(0, (float) $request->query->get('down_payment', '0'));
+        $term = max(12, (int) $request->query->get('term', '240'));
+
+        // Проверка: down не может быть больше cost
+        if ($down >= $cost) {
+            $down = $cost * 0.2; // Автокоррекция на 20%
+        }
+
         $region = (string) $request->query->get('region', 'ALL');
         $propertyType = (string) $request->query->get('property_type', 'ALL');
         $hasInsurance = (bool) (int) $request->query->get('has_insurance', '1');
         $isSalary = (bool) (int) $request->query->get('is_salary_client', '0');
         $electronic = (bool) (int) $request->query->get('electronic_registration', '0');
 
-        $loan = max(0.0, $cost - $down);
+        // Минимальная сумма кредита 100к
+        $loan = max(100000.0, $cost - $down);
 
         $matched = $this->products->findActiveMatching($region, $propertyType, $loan, $term);
 
@@ -64,9 +72,9 @@ final class MatchController extends AbstractController
                 'bank_logo_url'      => $p->getBankLogoUrl(),
                 'program_name'       => $p->getProgramName(),
                 'program_type'       => $p->getProgramType(),
-                'calculated_rate'    => $rate,
-                'monthly_payment'    => $payment,
-                'overpayment'        => round($total - $loan, 2),
+                'calculated_rate'    => round($rate, 2),
+                'monthly_payment'    => round($payment, 0),
+                'overpayment'        => round(max(0, $total - $loan), 2),
                 'total_payout'       => $total,
                 'min_down_payment'   => (float) $p->getMinDownPaymentPercent(),
                 'application_url'    => $p->getApplicationUrl(),
