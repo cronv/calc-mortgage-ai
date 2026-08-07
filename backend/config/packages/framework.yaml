@@ -1,0 +1,23 @@
+# Базовая конфигурация FrameworkBundle.
+framework:
+    secret: '%env(APP_SECRET)%'
+    http_method_override: false
+    handle_all_throwables: true
+
+    # Сессии не нужны для stateless JSON API — отключаем хранение, оставляя поддержку.
+    session: false
+
+    # PHP-сериализация атрибутов для кэша.
+    php_errors:
+        log: true
+
+    # Глобальный обработчик: JSON-ответы об ошибках для API.
+    serializer:
+        default_context:
+            enable_max_depth: true
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

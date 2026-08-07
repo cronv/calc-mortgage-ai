@@ -1,0 +1,5 @@
+framework:
+    cache:
+        # Пул приложения по умолчанию — файловый адаптер; в prod может быть переопределён на APCu/Redis.
+        app: cache.adapter.filesystem
+        system: cache.adapter.system

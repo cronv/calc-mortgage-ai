@@ -1,0 +1,31 @@
+# Конфигурация контейнера зависимостей.
+# Автоконфигурация и автовайринг включены: сервисы регистрируются как private,
+# зависимости внедряются по типам аргументов конструктора.
+
+parameters:
+    # Базовый URL источника данных для парсера (banki.ru).
+    app.parser.source_url: 'https://www.banki.ru/services/calculators/hypothec/'
+    # User-Agent для HTTP-клиента парсера.
+    app.parser.user_agent: 'Mozilla/5.0 (compatible; MortgageBot/1.0; +https://example.com/bot)'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            string $parserSourceUrl: '%app.parser.source_url%'
+            string $parserUserAgent: '%app.parser.user_agent%'
+
+    # Регистрируем всё из src/ как сервисы.
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # Контроллеры помечаем тегом controller.service_arguments для инъекции в методы экшенов.
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']

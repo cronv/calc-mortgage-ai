@@ -1,0 +1,15 @@
+:root{
+  --dark:#131921; --panel:#232F3D; --accent:#FEBD69; --bg:#fff; --ink:#000;
+  --muted:#6A6A6A; --soft:#F8F8F8; --line:#DEDEDE; --link:#1B75BB;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow-x:hidden}
+body{
+  font-family:'Montserrat',system-ui,-apple-system,sans-serif;
+  font-weight:400;font-size:16px;color:var(--ink);background:var(--bg);line-height:1.45;
+  -webkit-text-size-adjust:100%;
+}
+button{font-family:inherit;cursor:pointer}
+input,select{font-family:inherit}
+a{color:var(--link);text-decoration:none}
+.wrap{max-width:1280px;margin:0 auto;padding:0 clamp(14px,4vw,20px)}

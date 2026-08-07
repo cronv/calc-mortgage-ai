@@ -1,0 +1,15 @@
+# CORS для встраиваемого виджета: API доступен с сайтов партнёров.
+nelmio_cors:
+    defaults:
+        origin_regex: true
+        allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
+        allow_methods: ['GET', 'POST', 'OPTIONS']
+        allow_headers: ['Content-Type', 'Authorization', 'X-Requested-With']
+        expose_headers: ['Link']
+        max_age: 3600
+    paths:
+        '^/api/':
+            allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
+            allow_methods: ['GET', 'POST', 'OPTIONS']
+            allow_headers: ['Content-Type', 'Authorization', 'X-Requested-With']
+            max_age: 3600

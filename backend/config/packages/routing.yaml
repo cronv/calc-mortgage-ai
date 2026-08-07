@@ -1,0 +1,9 @@
+framework:
+    router:
+        # Утилитарные параметры в строке запроса не должны влиять на генерацию URL.
+        utf8: true
+
+when@prod:
+    framework:
+        router:
+            strict_requirements: null

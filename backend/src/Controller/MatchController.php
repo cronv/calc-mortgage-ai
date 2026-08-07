@@ -1,0 +1,91 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use App\Repository\BankProductRepository;
+use App\Repository\GovernmentProgramRepository;
+use App\Service\MortgageCalculator;
+use App\Service\UnderwritingService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+
+/**
+ * ЕДИНЫЙ эндпоинт подбора предложений — используется и публичным калькулятором,
+ * и встраиваемым виджетом. Данные берутся из одних и тех же таблиц БД.
+ */
+#[Route('/api/v1/calculator')]
+final class MatchController extends AbstractController
+{
+    public function __construct(
+        private readonly BankProductRepository $products,
+        private readonly GovernmentProgramRepository $govPrograms,
+        private readonly MortgageCalculator $calc,
+        private readonly UnderwritingService $uw,
+    ) {
+    }
+
+    /** GET /api/v1/calculator/match */
+    #[Route('/match', name: 'api_match', methods: ['GET'])]
+    public function match(Request $request): JsonResponse
+    {
+        $cost = (float) $request->query->get('cost', '0');
+        $down = (float) $request->query->get('down_payment', '0');
+        $term = (int) $request->query->get('term', '240');
+        $region = (string) $request->query->get('region', 'ALL');
+        $propertyType = (string) $request->query->get('property_type', 'ALL');
+        $hasInsurance = (bool) (int) $request->query->get('has_insurance', '1');
+        $isSalary = (bool) (int) $request->query->get('is_salary_client', '0');
+        $electronic = (bool) (int) $request->query->get('electronic_registration', '0');
+
+        $loan = max(0.0, $cost - $down);
+
+        $matched = $this->products->findActiveMatching($region, $propertyType, $loan, $term);
+
+        $offers = [];
+        foreach ($matched as $p) {
+            $rate = $this->uw->adjustRate(
+                (float) $p->getInterestRateMin(),
+                $hasInsurance,
+                $isSalary,
+                $electronic,
+                (float) $p->getRateWithoutInsurance(),
+                (float) $p->getSalaryClientDiscount(),
+                (float) $p->getElectronicRegistrationDiscount(),
+            );
+            $payment = $this->calc->annuityPayment($loan, $term, $rate);
+            $total = round($payment * $term, 2);
+
+            $offers[] = [
+                'bank_name'          => $p->getBankName(),
+                'bank_logo_url'      => $p->getBankLogoUrl(),
+                'program_name'       => $p->getProgramName(),
+                'program_type'       => $p->getProgramType(),
+                'calculated_rate'    => $rate,
+                'monthly_payment'    => $payment,
+                'overpayment'        => round($total - $loan, 2),
+                'total_payout'       => $total,
+                'min_down_payment'   => (float) $p->getMinDownPaymentPercent(),
+                'application_url'    => $p->getApplicationUrl(),
+                'special_conditions' => $p->getSpecialConditions(),
+            ];
+        }
+
+        // Сортировка по ставке (по умолчанию). Клиент может пересортировать на фронте.
+        usort($offers, static fn($a, $b) => $a['calculated_rate'] <=> $b['calculated_rate']);
+
+        $govApplied = [];
+        foreach ($this->govPrograms->findActive() as $g) {
+            $govApplied[] = $g->getProgramKey();
+        }
+
+        return $this->json([
+            'offers'                     => $offers,
+            'total_offers'               => count($offers),
+            'government_programs_applied' => $govApplied,
+        ]);
+    }
+}
