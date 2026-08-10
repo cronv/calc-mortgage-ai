@@ -84,14 +84,15 @@ class RefinanceProgramParser extends AbstractProgramParser
 
                     if (count($uids) >= 50) {
                         // Обрабатываем порцию UID'ов
-                        yield from $this->processUidsBatch($uids, $offerMap, $limit, $count);
-                        $count += count($uids);
+                        foreach ($this->processUidsBatch($uids, $offerMap) as $bankProduct) {
+                            if ($count >= $limit) {
+                                break 3;
+                            }
+                            yield $bankProduct;
+                            $count++;
+                        }
                         $uids = [];
                         $offerMap = [];
-
-                        if ($count >= $limit) {
-                            break 2;
-                        }
                     }
                 }
 
@@ -102,8 +103,13 @@ class RefinanceProgramParser extends AbstractProgramParser
 
             // Обрабатываем оставшиеся UID'ы
             if (!empty($uids)) {
-                yield from $this->processUidsBatch($uids, $offerMap, $limit, $count);
-                $count += count($uids);
+                foreach ($this->processUidsBatch($uids, $offerMap) as $bankProduct) {
+                    if ($count >= $limit) {
+                        break 2;
+                    }
+                    yield $bankProduct;
+                    $count++;
+                }
             }
 
             $page++;
@@ -157,11 +163,9 @@ class RefinanceProgramParser extends AbstractProgramParser
      *
      * @param array<string> $uids Список UID продуктов
      * @param array<string, array> $offerMap Маппинг uid => offer данные
-     * @param int $limit Лимит всего продуктов
-     * @param int $currentCount Текущее количество обработанных продуктов
      * @return \Generator<\App\Entity\BankProduct>
      */
-    private function processUidsBatch(array $uids, array $offerMap, int $limit, int $currentCount): \Generator
+    private function processUidsBatch(array $uids, array $offerMap): \Generator
     {
         if (empty($uids)) {
             return;
@@ -183,16 +187,10 @@ class RefinanceProgramParser extends AbstractProgramParser
         $products = $productsData['products'] ?? [];
 
         foreach ($products as $product) {
-            if ($currentCount + 1 > $limit) {
-                break;
-            }
-
             $bankProduct = $this->extractBankProduct($product, $offerMap);
             if ($bankProduct !== null) {
                 yield $bankProduct;
             }
-
-            $currentCount++;
         }
     }
 
