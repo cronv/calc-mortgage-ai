@@ -17,7 +17,9 @@ services:
             string $parserSourceUrl: '%app.parser.source_url%'
             string $parserUserAgent: '%app.parser.user_agent%'
 
-    # Регистрируем всё из src/ как сервисы.
+    # Автоматическая регистрация всех сервисов из src/
+    # Адаптеры парсеров автоматически получат тег 'app.program_parser' 
+    # благодаря атрибуту #[AutoconfigureTag('app.program_parser')]
     App\:
         resource: '../src/'
         exclude:
