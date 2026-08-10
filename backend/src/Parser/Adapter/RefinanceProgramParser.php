@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Parser\Adapter;
 
 use App\Parser\AbstractProgramParser;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**
  * Парсер для рефинансирования ипотеки (mortgage_refinance).
@@ -25,6 +26,7 @@ use App\Parser\AbstractProgramParser;
  * UID формируется как: <bank_id><product_type_id>
  * Например: 1231507 где 12315 — bank_id, 07 — product_type_id (mortgage_refinance)
  */
+#[AutoconfigureTag('app.program_parser')]
 class RefinanceProgramParser extends AbstractProgramParser
 {
     private const BASE_URL = 'https://www.banki.ru';

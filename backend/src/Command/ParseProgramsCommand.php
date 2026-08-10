@@ -12,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 #[AsCommand(
     name: 'parser:programs',
@@ -25,6 +26,7 @@ final class ParseProgramsCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly BankProductRepository $repository,
+        #[AutowireIterator('app.program_parser')]
         private readonly iterable $parsers,
     ) {
         parent::__construct();

@@ -102,7 +102,7 @@ php bin/console parser:programs
 
 ## Расширение функциональности
 
-### Добавление нового адаптера
+### Добавление нового адаптера (Symfony 7.2+ с атрибутами)
 
 1. Создайте класс в `src/Parser/Adapter/`:
 
@@ -112,7 +112,9 @@ php bin/console parser:programs
 namespace App\Parser\Adapter;
 
 use App\Parser\AbstractProgramParser;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag('app.program_parser')]
 class FamilyMortgageParser extends AbstractProgramParser
 {
     public function getProductType(): string
@@ -128,15 +130,9 @@ class FamilyMortgageParser extends AbstractProgramParser
 }
 ```
 
-2. Зарегистрируйте в `config/services.yaml`:
+2. **Готово!** Никакой регистрации в `services.yaml` не требуется — атрибут `#[AutoconfigureTag]` автоматически зарегистрирует адаптер.
 
-```yaml
-services:
-    App\Parser\Adapter\FamilyMortgageParser:
-        tags: [app.program_parser]
-```
-
-3. Готово! Команда автоматически найдёт новый адаптер.
+Команда `ParseProgramsCommand` использует атрибут `#[AutowireIterator('app.program_parser')]` для автоматического получения всех адаптеров.
 
 ## Структура данных BankProduct
 
