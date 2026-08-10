@@ -6,6 +6,7 @@ namespace App\Command;
 
 use App\Parser\AbstractProgramParser;
 use App\Repository\BankProductRepository;
+use App\Service\BatchProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -25,6 +26,7 @@ final class ParseProgramsCommand extends Command
      */
     public function __construct(
         private readonly EntityManagerInterface $em,
+        private readonly BatchProcessor $batchProcessor,
         private readonly BankProductRepository $repository,
         #[AutowireIterator('app.program_parser', defaultPriorityField: 'priority')] private readonly iterable $parsers,
     ) {
@@ -46,50 +48,18 @@ final class ParseProgramsCommand extends Command
 
             $new = 0;
             $updated = 0;
-            $batchSize = 50;
-            $batchCount = 0;
 
             try {
-                foreach ($parser->parse(100) as $entity) {
-                    // Нормализуем ключ для проверки на дубли
-                    $uniqueKey = mb_strtolower(trim($entity->getBankName()) . '|' . trim($entity->getProgramName()));
+                // Создаём генератор сущностей с дедупликацией и логикой обновления
+                $entityGenerator = $this->createEntityGenerator($parser, $new, $updated, $processedKeys);
 
-                    if (isset($processedKeys[$uniqueKey])) {
-                        continue; // Пропускаем дубль
-                    }
-                    $processedKeys[$uniqueKey] = true;
-
-                    $existing = $this->repository->findOneByBankAndProgram($entity->getBankName(), $entity->getProgramName());
-                    $isNew = $existing === null;
-
-                    if (!$isNew) {
-                        // Обновляем существующий entity
-                        $entity->setId($existing->getId());
-                        $this->em->merge($entity);
-                        $updated++;
-                    } else {
-                        $this->em->persist($entity);
-                        $new++;
-                    }
-
-                    $batchCount++;
-
-                    // Flush in batches to save memory
-                    if ($batchCount % $batchSize === 0) {
-                        $this->em->flush();
-                        $this->em->clear();
-                        $io->writeln(sprintf('  Обработано: <info>%d</info> (новых: %d, обновлено: %d)', $batchCount, $new, $updated));
-                    }
-                }
-
-                // Final flush
-                $this->em->flush();
-                $this->em->clear();
+                // Используем BatchProcessor для пакетной записи
+                $count = $this->batchProcessor->process($entityGenerator);
 
                 $totalNew += $new;
                 $totalUpdated += $updated;
 
-                $io->success(sprintf('Готово (%s). Новых: %d, обновлено: %d', $productType, $new, $updated));
+                $io->success(sprintf('Готово (%s). Обработано: %d (новых: %d, обновлено: %d)', $productType, $count, $new, $updated));
             } catch (\Throwable $e) {
                 $io->error(sprintf('Ошибка при парсинге %s: %s', $productType, $e->getMessage()));
                 // Продолжаем с следующим адаптером
@@ -99,5 +69,46 @@ final class ParseProgramsCommand extends Command
         $io->success(sprintf('Всего завершено. Новых: %d, обновлено: %d', $totalNew, $totalUpdated));
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Создаёт генератор сущностей с дедупликацией и логикой обновления/создания.
+     *
+     * @param AbstractProgramParser $parser Парсер для получения данных
+     * @param int &$new Счётчик новых записей (передаётся по ссылке)
+     * @param int &$updated Счётчик обновлённых записей (передаётся по ссылке)
+     * @param array<string, bool> &$processedKeys Кеш обработанных ключей (передаётся по ссылке)
+     * @return \Generator<\App\Entity\BankProduct>
+     */
+    private function createEntityGenerator(
+        AbstractProgramParser $parser,
+        int &$new,
+        int &$updated,
+        array &$processedKeys
+    ): \Generator {
+        foreach ($parser->parse(100) as $entity) {
+            // Нормализуем ключ для проверки на дубли
+            $uniqueKey = mb_strtolower(trim($entity->getBankName()) . '|' . trim($entity->getProgramName()));
+
+            if (isset($processedKeys[$uniqueKey])) {
+                continue; // Пропускаем дубль
+            }
+            $processedKeys[$uniqueKey] = true;
+
+            $existing = $this->repository->findOneByBankAndProgram($entity->getBankName(), $entity->getProgramName());
+            $isNew = $existing === null;
+
+            if (!$isNew) {
+                // Обновляем существующий entity
+                $entity->setId($existing->getId());
+                $this->em->merge($entity);
+                $updated++;
+            } else {
+                $this->em->persist($entity);
+                $new++;
+            }
+
+            yield $entity;
+        }
     }
 }

@@ -118,7 +118,7 @@ class RefinanceProgramParser extends AbstractProgramParser
     /**
      * Запрашивает данные виджета группы продуктов для рефинансирования.
      */
-    private function fetchWidgetGroup(int $page, int $limit): array
+    protected function fetchWidgetGroup(int $page, int $limit): array
     {
         $queryParams = [
             'pageType' => 'CALCHYPOTHEC',

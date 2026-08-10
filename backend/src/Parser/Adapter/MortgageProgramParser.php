@@ -117,11 +117,11 @@ class MortgageProgramParser extends AbstractProgramParser
     /**
      * Запрашивает данные виджета группы продуктов.
      */
-    private function fetchWidgetGroup(int $page, int $limit): array
+    protected function fetchWidgetGroup(int $page, int $limit): array
     {
         $queryParams = [
             'pageType' => 'CALCHYPOTHEC',
-            'productTypes[]' => 'mortgage',
+            'productTypes[]' => $this->getProductType(),
             'requestedAmount' => '1500000',
             'requestedTerm' => '20',
             'requestedTermUnit' => '7', // years
@@ -135,6 +135,11 @@ class MortgageProgramParser extends AbstractProgramParser
             'regionId' => '4', // Москва
             'reason' => 'show_more',
         ];
+
+        // Добавляем catalog для рефинансирования
+        if ($this->getProductType() === 'mortgage_refinance') {
+            $queryParams['catalog'] = 'refinansirovanie_ipoteki';
+        }
 
         $url = self::WIDGET_GROUP_URL . '?' . http_build_query($queryParams);
 

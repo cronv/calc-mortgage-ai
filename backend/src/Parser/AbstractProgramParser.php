@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Parser;
 
 use App\Entity\BankProduct;
+use App\Service\BatchProcessor;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -14,10 +15,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 abstract class AbstractProgramParser
 {
     protected HttpClientInterface $httpClient;
+    protected BatchProcessor $batchProcessor;
 
-    public function __construct(HttpClientInterface $httpClient)
-    {
+    public function __construct(
+        HttpClientInterface $httpClient,
+        BatchProcessor $batchProcessor
+    ) {
         $this->httpClient = $httpClient;
+        $this->batchProcessor = $batchProcessor;
     }
 
     /**
