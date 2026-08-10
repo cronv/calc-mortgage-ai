@@ -59,7 +59,7 @@ class RefinanceProgramParser extends AbstractProgramParser
             // Шаг 1: Получаем список продуктов с банка
             $widgetData = $this->fetchWidgetGroup($page, $perPage);
 
-            if (empty($widgetData['offers']['items'])) {
+            if (empty($widgetData['items'])) {
                 break; // Больше нет данных
             }
 
@@ -67,7 +67,7 @@ class RefinanceProgramParser extends AbstractProgramParser
             $uids = [];
             $offerMap = []; // uid => offer данные из виджета
 
-            foreach ($widgetData['offers']['items'] as $bankGroup) {
+            foreach ($widgetData['items'] as $bankGroup) {
                 // Сохраняем информацию о банке в кэш
                 if (isset($bankGroup['partnerData']['id'])) {
                     $this->bankCache[$bankGroup['partnerData']['id']] = $bankGroup['partnerData'];
@@ -75,12 +75,14 @@ class RefinanceProgramParser extends AbstractProgramParser
 
                 $programs = $bankGroup['items'] ?? [];
                 foreach ($programs as $program) {
-                    if (!isset($program['uid'])) {
+                    // API возвращает productUid вместо uid
+                    $uid = $program['productUid'] ?? null;
+                    if (!$uid) {
                         continue;
                     }
 
-                    $uids[] = $program['uid'];
-                    $offerMap[$program['uid']] = $program;
+                    $uids[] = $uid;
+                    $offerMap[$uid] = $program;
 
                     if (count($uids) >= 50) {
                         // Обрабатываем порцию UID'ов
@@ -115,7 +117,7 @@ class RefinanceProgramParser extends AbstractProgramParser
             $page++;
 
             // Проверка: если на странице меньше чем perPage, значит это последняя страница
-            if (count($widgetData['offers']['items']) < $perPage) {
+            if (count($widgetData['items']) < $perPage) {
                 break;
             }
         }
