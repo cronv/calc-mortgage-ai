@@ -87,8 +87,8 @@ foreach ($parser->parse(100) as $entity) {
 ## Запуск парсера
 
 ```bash
-# Через Docker
-docker compose exec backend php bin/console parser:programs
+# Через Docker Compose
+docker compose -f compose.yaml -f compose.override.yaml exec backend php bin/console parser:programs
 
 # Или напрямую (если PHP установлен локально)
 php bin/console parser:programs
@@ -99,6 +99,32 @@ php bin/console parser:programs
 2. Для каждого адаптера парсит до 100 продуктов
 3. Сохраняет данные порциями по 50 записей
 4. Пропускает дубликаты (проверка по паре "банк + программа")
+
+## Современный подход Symfony 7.2+ с PHP 8.4
+
+### Автоматическая регистрация через атрибуты
+
+Вместо ручной регистрации сервисов в `services.yaml`, используется современный подход с атрибутами:
+
+**Адаптеры** используют атрибут `#[AutoconfigureTag('app.program_parser')]`:
+```php
+#[AutoconfigureTag('app.program_parser')]
+class MortgageProgramParser extends AbstractProgramParser
+```
+
+**Команда** использует атрибут `#[AutowireIterator]` для получения всех адаптеров:
+```php
+public function __construct(
+    #[AutowireIterator('app.program_parser', defaultPriorityField: 'priority')] 
+    private readonly iterable $parsers,
+) {}
+```
+
+**Преимущества:**
+- Никакой YAML-конфигурации для новых адаптеров
+- Автоконфигурация через `autoconfigure: true`
+- Ленивая загрузка сервисов (lazy loading)
+- Типобезопасность через атрибуты PHP 8.4
 
 ## Расширение функциональности
 
@@ -126,13 +152,34 @@ class FamilyMortgageParser extends AbstractProgramParser
     {
         // Ваша логика парсинга
         // Используйте yield для возврата продуктов
+        // Пример:
+        //   $products = $this->fetchFamilyMortgageData();
+        //   foreach ($products as $product) {
+        //       yield $this->createBankProduct($product);
+        //   }
     }
 }
 ```
 
 2. **Готово!** Никакой регистрации в `services.yaml` не требуется — атрибут `#[AutoconfigureTag]` автоматически зарегистрирует адаптер.
 
-Команда `ParseProgramsCommand` использует атрибут `#[AutowireIterator('app.program_parser')]` для автоматического получения всех адаптеров.
+Команда `ParseProgramsCommand` использует атрибут `#[AutowireIterator('app.program_parser', defaultPriorityField: 'priority')]` для автоматического получения всех адаптеров.
+
+### Приоритет выполнения адаптеров
+
+Если нужно контролировать порядок выполнения адаптеров, добавьте свойство `$priority`:
+
+```php
+#[AutoconfigureTag('app.program_parser')]
+class MortgageProgramParser extends AbstractProgramParser
+{
+    public static int $priority = 10; // Высокий приоритет
+    
+    // ...
+}
+```
+
+Адаптеры с большим priority выполнятся первыми.
 
 ## Структура данных BankProduct
 
