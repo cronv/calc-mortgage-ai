@@ -1,1 +1,25 @@
-Nothing needs to be added to the .gitignore file since the changes only include PHP source files (.php) which are legitimate source code files that should not be ignored.
+# Dependencies
+vendor/
+composer.lock
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+.phpunit.result.cache
