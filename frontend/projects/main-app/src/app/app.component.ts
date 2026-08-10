@@ -19,7 +19,7 @@ import { environment } from './environments/environment';
     <header class="top">
       <div class="wrap trow">
 <!--        <a class="logo" href="#">-->
-<!--          <span class="mark">И</span> ИпотекаХаб-->
+<!--          <span class="mark">И</span> Ипотека -->
 <!--        </a>-->
         <span class="geo">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -110,7 +110,7 @@ import { environment } from './environments/environment';
         <div><a href="#">Помощь</a><a href="#">Сайт для инвесторов</a><a href="#">Ипотечный калькулятор</a></div>
       </div>
       <div class="wrap fnote">
-        © {{ year }} ИпотекаХаб — расчёты носят справочный характер и не являются публичной офертой.
+        © {{ year }} {{ baseOrgName }} — расчёты носят справочный характер и не являются публичной офертой.
       </div>
     </footer>
   `,
@@ -188,6 +188,7 @@ import { environment } from './environments/environment';
 })
 export class AppComponent {
   readonly baseRedirectUrl = environment.BASE_REDIRECT_URL;
+  readonly baseOrgName = environment.ORG_NAME;
   readonly flow = inject(ApplicationFlowService);
   readonly year = new Date().getFullYear();
   readonly subscribed = signal(false);
