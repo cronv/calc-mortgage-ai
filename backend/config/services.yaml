@@ -29,3 +29,20 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
+
+    # Парсеры: регистрируем адаптеры и передаём их в команду через tagged iterator
+    App\Parser\AbstractProgramParser:
+        tag:
+            name: app.program_parser
+            abstract: true
+
+    App\Parser\Adapter\MortgageProgramParser:
+        tags: [app.program_parser]
+
+    App\Parser\Adapter\RefinanceProgramParser:
+        tags: [app.program_parser]
+
+    # Команда парсинга: получаем все парсеры через tagged iterator
+    App\Command\ParseProgramsCommand:
+        arguments:
+            $parsers: !tagged_iterator app.program_parser

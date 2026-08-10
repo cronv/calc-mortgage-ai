@@ -114,6 +114,7 @@ class BankProduct
     }
 
     public function getId(): ?int { return $this->id; }
+    public function setId(?int $id): self { $this->id = $id; return $this; }
 
     public function getBankName(): string { return $this->bankName; }
     public function setBankName(string $v): self { $this->bankName = $v; return $this; }
