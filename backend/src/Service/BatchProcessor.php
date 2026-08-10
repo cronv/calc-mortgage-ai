@@ -13,14 +13,14 @@ use Generator;
  *
  * @template T
  */
-class BatchProcessor
+readonly class BatchProcessor
 {
     /**
      * @param int $batchSize Размер пачки для flush/clear
      */
     public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly int $batchSize = 50
+        private EntityManagerInterface $em,
+        private int                    $batchSize = 50
     ) {
     }
 
