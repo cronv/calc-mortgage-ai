@@ -26,8 +26,7 @@ final class ParseProgramsCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly BankProductRepository $repository,
-        #[AutowireIterator('app.program_parser')]
-        private readonly iterable $parsers,
+        #[AutowireIterator('app.program_parser')] private readonly iterable $parsers,
     ) {
         parent::__construct();
     }
