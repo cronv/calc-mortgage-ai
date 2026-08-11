@@ -173,8 +173,8 @@ class RefinanceProgramParser extends AbstractProgramParser
             return;
         }
 
-        // Формируем запрос с uids[]
-        $uidsQuery = http_build_query(array_map(fn($uid) => ['uids[]' => $uid], $uids), '', '&');
+        // Формируем запрос с uids[] - правильно передаём массив
+        $uidsQuery = http_build_query(['uids' => $uids], '', '&', PHP_QUERY_RFC3986);
         $url = self::PRODUCTS_URL . '?' . $uidsQuery;
 
         $response = $this->httpClient->request('GET', $url, [
