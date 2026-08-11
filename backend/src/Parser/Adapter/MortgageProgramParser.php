@@ -53,14 +53,35 @@ class MortgageProgramParser extends AbstractProgramParser
         $page = 1;
         $perPage = 15;
         $count = 0;
+        $consecutiveEmptyPages = 0;
+        $maxConsecutiveEmptyPages = 3;
 
         while ($count < $limit) {
-            // Шаг 1: Получаем список продуктов с банка
-            $widgetData = $this->fetchWidgetGroup($page, $perPage);
-
-            if (empty($widgetData['items'])) {
-                break; // Больше нет данных — выходим из цикла
+            try {
+                // Шаг 1: Получаем список продуктов с банка
+                $widgetData = $this->fetchWidgetGroup($page, $perPage);
+            } catch (\Throwable $e) {
+                // При ошибке запроса пробуем ещё несколько страниц
+                $consecutiveEmptyPages++;
+                if ($consecutiveEmptyPages >= $maxConsecutiveEmptyPages) {
+                    break;
+                }
+                ++$page;
+                continue;
             }
+
+            // Проверяем, есть ли данные
+            if (empty($widgetData['items'])) {
+                $consecutiveEmptyPages++;
+                if ($consecutiveEmptyPages >= $maxConsecutiveEmptyPages) {
+                    break; // Больше нет данных — выходим из цикла
+                }
+                ++$page;
+                continue;
+            }
+
+            // Сбрасываем счётчик пустых страниц при успешном получении данных
+            $consecutiveEmptyPages = 0;
 
             // Собираем UIDs для детального запроса
             $uids = [];
@@ -113,7 +134,7 @@ class MortgageProgramParser extends AbstractProgramParser
                 }
             }
 
-            $page++;
+            ++$page;
         }
     }
 
