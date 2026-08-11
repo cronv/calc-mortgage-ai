@@ -177,7 +177,7 @@ class MortgageProgramParser extends AbstractProgramParser
         }
 
         // Формируем запрос с uids[] - правильно передаём массив
-        $uidsQuery = http_build_query(['uids' => $uids], '', '&', PHP_QUERY_RFC3986);
+        $uidsQuery = implode('&', array_map(fn($uid) => 'uids[]=' . rawurlencode((string) $uid), $uids));
         $url = self::PRODUCTS_URL . '?' . $uidsQuery;
 
         $response = $this->httpClient->request('GET', $url, [
