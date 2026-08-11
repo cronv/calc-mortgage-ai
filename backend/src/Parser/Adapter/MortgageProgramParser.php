@@ -62,7 +62,6 @@ class MortgageProgramParser extends AbstractProgramParser
                 break; // Больше нет данных — выходим из цикла
             }
 
-            ++$page;
             // Собираем UIDs для детального запроса
             $uids = [];
             $offerMap = []; // uid => offer данные из виджета
@@ -113,6 +112,9 @@ class MortgageProgramParser extends AbstractProgramParser
                     $count++;
                 }
             }
+
+            // Увеличиваем номер страницы после обработки всех данных текущей страницы
+            ++$page;
         }
     }
 
