@@ -53,14 +53,13 @@ class MortgageProgramParser extends AbstractProgramParser
         $page = 1;
         $perPage = 15;
         $count = 0;
-        $maxPages = (int) ceil($limit / $perPage) + 1;
 
-        while ($count < $limit && $page <= $maxPages) {
+        while ($count < $limit) {
             // Шаг 1: Получаем список продуктов с банка
             $widgetData = $this->fetchWidgetGroup($page, $perPage);
 
             if (empty($widgetData['items'])) {
-                break; // Больше нет данных
+                break; // Больше нет данных — выходим из цикла
             }
 
             // Собираем UIDs для детального запроса
