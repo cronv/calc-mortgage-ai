@@ -177,7 +177,7 @@ class MortgageProgramParser extends AbstractProgramParser
         }
 
         // Формируем запрос с uids[] - правильно передаём массив
-        $uidsQuery = implode('&', array_map(fn($uid) => 'uids[]=' . rawurlencode((string) $uid), $uids));
+        $uidsQuery = http_build_query(['uids' => $uids], '', '&', PHP_QUERY_RFC3986);;
         $url = self::PRODUCTS_URL . '?' . $uidsQuery;
 
         $response = $this->httpClient->request('GET', $url, [
@@ -189,7 +189,7 @@ class MortgageProgramParser extends AbstractProgramParser
         ]);
 
         $productsData = $response->toArray();
-        $products = $productsData['products'] ?? [];
+        $products = $productsData['items'] ?? [];
 
         foreach ($products as $product) {
             $bankProduct = $this->extractBankProduct($product, $offerMap);
@@ -204,7 +204,7 @@ class MortgageProgramParser extends AbstractProgramParser
      */
     private function extractBankProduct(array $product, array $offerMap): ?\App\Entity\BankProduct
     {
-        $uid = $product['uid'] ?? null;
+        $uid = $product['productUid'] ?? null;
         if (!$uid) {
             return null;
         }
