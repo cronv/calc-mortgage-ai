@@ -53,14 +53,9 @@ final class ParseProgramsCommand extends Command
                 // Создаём генератор сущностей с дедупликацией и логикой обновления
                 $entityGenerator = $this->createEntityGenerator($parser, $new, $updated, $processedKeys);
 
-                // Используем BatchProcessor для пакетной записи с callback для persist/merge
-                $count = $this->batchProcessor->process($entityGenerator, function ($entity) use (&$new, &$updated): void {
-                    if ($entity->getId() !== null) {
-                        $this->em->merge($entity);
-                    } else {
-                        $this->em->persist($entity);
-                    }
-                });
+                // Используем BatchProcessor для пакетной записи.
+                // Callback не нужен — BatchProcessor сам вызовет persist() для всех сущностей.
+                $count = $this->batchProcessor->process($entityGenerator);
 
                 $totalNew += $new;
                 $totalUpdated += $updated;
@@ -103,17 +98,54 @@ final class ParseProgramsCommand extends Command
             $processedKeys[$uniqueKey] = true;
 
             $existing = $this->repository->findOneByBankAndProgram($entity->getBankName(), $entity->getProgramName());
-            $isNew = $existing === null;
-
-            if (!$isNew) {
-                // Обновляем существующую сущность
-                $entity->setId($existing->getId());
+            
+            if ($existing !== null) {
+                // Обновляем поля существующей сущности данными из парсера
+                $this->updateEntityFromParser($existing, $entity);
                 $updated++;
+                yield $existing; // Возвращаем существующую сущность для persist
             } else {
                 $new++;
+                yield $entity; // Возвращаем новую сущность
             }
+        }
+    }
 
-            yield $entity;
+    /**
+     * Обновляет поля существующей сущности данными из новой сущности.
+     */
+    private function updateEntityFromParser(\App\Entity\BankProduct $existing, \App\Entity\BankProduct $new): void
+    {
+        $existing
+            ->setBankName($new->getBankName())
+            ->setBankLogoUrl($new->getBankLogoUrl())
+            ->setProgramName($new->getProgramName())
+            ->setProgramType($new->getProgramType())
+            ->setInterestRateMin($new->getInterestRateMin())
+            ->setInterestRateMax($new->getInterestRateMax())
+            ->setMinDownPaymentPercent($new->getMinDownPaymentPercent())
+            ->setMinLoanAmount($new->getMinLoanAmount())
+            ->setMaxLoanAmount($new->getMaxLoanAmount())
+            ->setLoanTermMinMonths($new->getLoanTermMinMonths())
+            ->setLoanTermMaxMonths($new->getLoanTermMaxMonths())
+            ->setPropertyType($new->getPropertyType())
+            ->setRegion($new->getRegion())
+            ->setApplicationUrl($new->getApplicationUrl())
+            ->setSourceUrl($new->getSourceUrl())
+            ->setIsActive($new->isActive());
+        
+        // Опциональные поля
+        if ($new->getRateWithoutInsurance() !== '0.00') {
+            $existing->setRateWithoutInsurance($new->getRateWithoutInsurance());
+        }
+        if ($new->getSalaryClientDiscount() !== '0.00') {
+            $existing->setSalaryClientDiscount($new->getSalaryClientDiscount());
+        }
+        if ($new->getElectronicRegistrationDiscount() !== '0.00') {
+            $existing->setElectronicRegistrationDiscount($new->getElectronicRegistrationDiscount());
+        }
+        if ($new->getSpecialConditions() !== null) {
+            $existing->setSpecialConditions($new->getSpecialConditions());
         }
     }
 }

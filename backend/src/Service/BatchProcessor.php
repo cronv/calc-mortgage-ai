@@ -41,12 +41,9 @@ readonly class BatchProcessor
             if ($persistCallback !== null) {
                 $persistCallback($item);
             } else {
-                // Если нет callback, используем стандартную логику: persist для новых, merge для существующих
-                if ($item->getId() !== null) {
-                    $this->em->merge($item);
-                } else {
-                    $this->em->persist($item);
-                }
+                // В Doctrine 3.x метод merge() удалён. Используем persist() для всех сущностей.
+                // Doctrine автоматически определит, нужно ли обновлять или создавать запись.
+                $this->em->persist($item);
             }
 
             $count++;
