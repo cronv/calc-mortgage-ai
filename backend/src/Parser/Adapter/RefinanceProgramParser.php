@@ -63,6 +63,7 @@ class RefinanceProgramParser extends AbstractProgramParser
                 break; // Больше нет данных — выходим из цикла
             }
 
+            ++$page;
             // Собираем UIDs для детального запроса
             $uids = [];
             $offerMap = []; // uid => offer данные из виджета
@@ -113,8 +114,6 @@ class RefinanceProgramParser extends AbstractProgramParser
                     $count++;
                 }
             }
-
-            $page++;
         }
     }
 
