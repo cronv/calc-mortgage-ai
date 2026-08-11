@@ -53,8 +53,14 @@ final class ParseProgramsCommand extends Command
                 // Создаём генератор сущностей с дедупликацией и логикой обновления
                 $entityGenerator = $this->createEntityGenerator($parser, $new, $updated, $processedKeys);
 
-                // Используем BatchProcessor для пакетной записи
-                $count = $this->batchProcessor->process($entityGenerator);
+                // Используем BatchProcessor для пакетной записи с callback для persist/merge
+                $count = $this->batchProcessor->process($entityGenerator, function ($entity) use (&$new, &$updated): void {
+                    if ($entity->getId() !== null) {
+                        $this->em->merge($entity);
+                    } else {
+                        $this->em->persist($entity);
+                    }
+                });
 
                 $totalNew += $new;
                 $totalUpdated += $updated;
@@ -73,6 +79,7 @@ final class ParseProgramsCommand extends Command
 
     /**
      * Создаёт генератор сущностей с дедупликацией и логикой обновления/создания.
+     * Возвращает массив данных для создания/обновления сущности.
      *
      * @param AbstractProgramParser $parser Парсер для получения данных
      * @param int &$new Счётчик новых записей (передаётся по ссылке)
@@ -99,12 +106,10 @@ final class ParseProgramsCommand extends Command
             $isNew = $existing === null;
 
             if (!$isNew) {
-                // Обновляем существующий entity
+                // Обновляем существующую сущность
                 $entity->setId($existing->getId());
-                $this->em->merge($entity);
                 $updated++;
             } else {
-                $this->em->persist($entity);
                 $new++;
             }
 
