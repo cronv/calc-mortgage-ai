@@ -29,7 +29,7 @@ readonly class BatchProcessor
      * Автоматически вызывает flush() и clear() каждые $batchSize итераций.
      *
      * @param Generator<T> $itemsGenerator Генератор, возвращающий сущности
-     * @param callable(T): void $persistCallback Опциональный колбэк для дополнительной логики перед persist
+     * @param callable(T): void|null $persistCallback Опциональный колбэк для дополнительной логики перед persist
      *
      * @return int Количество сохраненных сущностей
      */
@@ -40,9 +40,15 @@ readonly class BatchProcessor
         foreach ($itemsGenerator as $item) {
             if ($persistCallback !== null) {
                 $persistCallback($item);
+            } else {
+                // Если нет callback, используем стандартную логику: persist для новых, merge для существующих
+                if ($item->getId() !== null) {
+                    $this->em->merge($item);
+                } else {
+                    $this->em->persist($item);
+                }
             }
 
-            $this->em->persist($item);
             $count++;
 
             // Если достигли размера пачки — сбрасываем и чистим память
