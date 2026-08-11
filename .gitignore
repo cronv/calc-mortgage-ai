@@ -1,37 +1,25 @@
-```php
+```
 # Compiled and build artifacts
-*.o
-*.obj
-*.out
-*.class
 *.pyc
 __pycache__/
 
 # Dependencies
 vendor/
-node_modules/
 composer.lock
 
 # Logs and temp files
 *.log
 *.tmp
 *.swp
-*.swo
 
 # Environment
 .env
 .env.local
-.env.*
+*.env.*
 
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# PHP specific
-.php_cs.cache
-.phpunit.result.cache
 
 # Coverage reports
 coverage/
