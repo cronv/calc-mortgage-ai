@@ -180,7 +180,7 @@ export class OffersComponent {
     effect((onCleanup) => {
       const i = this.svc.input();
       const q = i.tab === 'refinance'
-        ? { cost: i.currentBalance, down: 0, termMonths: i.months, propertyType: 'ALL' }
+        ? { cost: i.currentBalance, down: 0, termMonths: i.months, propertyType: 'REFINANCE' }
         : {
             cost: i.mode === 'by_payment' ? this.svc.loan() + i.down : i.cost,
             down: i.down,
