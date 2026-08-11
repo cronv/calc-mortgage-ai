@@ -88,7 +88,7 @@ final class ParseProgramsCommand extends Command
         int &$updated,
         array &$processedKeys
     ): \Generator {
-        foreach ($parser->parse(100) as $entity) {
+        foreach ($parser->parse(1000) as $entity) {
             // Нормализуем ключ для проверки на дубли
             $uniqueKey = mb_strtolower(trim($entity->getBankName()) . '|' . trim($entity->getProgramName()));
 
@@ -98,7 +98,7 @@ final class ParseProgramsCommand extends Command
             $processedKeys[$uniqueKey] = true;
 
             $existing = $this->repository->findOneByBankAndProgram($entity->getBankName(), $entity->getProgramName());
-            
+
             if ($existing !== null) {
                 // Обновляем поля существующей сущности данными из парсера
                 $this->updateEntityFromParser($existing, $entity);
@@ -133,7 +133,7 @@ final class ParseProgramsCommand extends Command
             ->setApplicationUrl($new->getApplicationUrl())
             ->setSourceUrl($new->getSourceUrl())
             ->setIsActive($new->isActive());
-        
+
         // Опциональные поля
         if ($new->getRateWithoutInsurance() !== '0.00') {
             $existing->setRateWithoutInsurance($new->getRateWithoutInsurance());
