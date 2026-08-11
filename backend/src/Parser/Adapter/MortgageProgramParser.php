@@ -62,6 +62,19 @@ class MortgageProgramParser extends AbstractProgramParser
                 break; // Больше нет данных — выходим из цикла
             }
 
+            // Проверяем, есть ли вообще программы на этой странице
+            $hasPrograms = false;
+            foreach ($widgetData['items'] as $bankGroup) {
+                if (!empty($bankGroup['items'])) {
+                    $hasPrograms = true;
+                    break;
+                }
+            }
+
+            if (!$hasPrograms) {
+                break; // Нет программ — выходим
+            }
+
             // Собираем UIDs для детального запроса
             $uids = [];
             $offerMap = []; // uid => offer данные из виджета
@@ -90,7 +103,7 @@ class MortgageProgramParser extends AbstractProgramParser
                                 break 3;
                             }
                             yield $bankProduct;
-                            $count++;
+                            ++$count;
                         }
                         $uids = [];
                         $offerMap = [];
@@ -109,11 +122,11 @@ class MortgageProgramParser extends AbstractProgramParser
                         break 2;
                     }
                     yield $bankProduct;
-                    $count++;
+                    ++$count;
                 }
             }
 
-            $page++;
+            ++$page;
         }
     }
 
