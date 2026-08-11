@@ -54,8 +54,9 @@ class RefinanceProgramParser extends AbstractProgramParser
         $page = 1;
         $perPage = 15;
         $count = 0;
+        $maxPages = (int) ceil($limit / $perPage) + 1;
 
-        while ($count < $limit) {
+        while ($count < $limit && $page <= $maxPages) {
             // Шаг 1: Получаем список продуктов с банка
             $widgetData = $this->fetchWidgetGroup($page, $perPage);
 
@@ -115,11 +116,6 @@ class RefinanceProgramParser extends AbstractProgramParser
             }
 
             $page++;
-
-            // Проверка: если на странице меньше чем perPage, значит это последняя страница
-            if (count($widgetData['items']) < $perPage) {
-                break;
-            }
         }
     }
 
