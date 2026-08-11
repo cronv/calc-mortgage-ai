@@ -53,8 +53,9 @@ class MortgageProgramParser extends AbstractProgramParser
         $page = 1;
         $perPage = 15;
         $count = 0;
+        $shouldStop = false;
 
-        while ($count < $limit) {
+        while ($count < $limit && !$shouldStop) {
             // Шаг 1: Получаем список продуктов с банка
             $widgetData = $this->fetchWidgetGroup($page, $perPage);
 
@@ -87,26 +88,31 @@ class MortgageProgramParser extends AbstractProgramParser
                         // Обрабатываем порцию UID'ов
                         foreach ($this->processUidsBatch($uids, $offerMap) as $bankProduct) {
                             if ($count >= $limit) {
-                                break 3;
+                                $shouldStop = true;
+                                break;
                             }
                             yield $bankProduct;
                             $count++;
+                        }
+                        if ($shouldStop) {
+                            break;
                         }
                         $uids = [];
                         $offerMap = [];
                     }
                 }
 
-                if ($count >= $limit) {
+                if ($shouldStop || $count >= $limit) {
                     break;
                 }
             }
 
             // Обрабатываем оставшиеся UID'ы
-            if (!empty($uids)) {
+            if (!$shouldStop && !empty($uids)) {
                 foreach ($this->processUidsBatch($uids, $offerMap) as $bankProduct) {
                     if ($count >= $limit) {
-                        break 2;
+                        $shouldStop = true;
+                        break;
                     }
                     yield $bankProduct;
                     $count++;
