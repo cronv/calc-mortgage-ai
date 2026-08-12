@@ -43,7 +43,7 @@ final class MatchController extends AbstractController
         }
 
         $region = (string) $request->query->get('region', 'ALL');
-        $propertyType = (string) $request->query->get('property_type', 'ALL');
+        $programType = (string) $request->query->get('program_type', 'mortgage');
         $hasInsurance = (bool) (int) $request->query->get('has_insurance', '1');
         $isSalary = (bool) (int) $request->query->get('is_salary_client', '0');
         $electronic = (bool) (int) $request->query->get('electronic_registration', '0');
@@ -51,7 +51,8 @@ final class MatchController extends AbstractController
         // Минимальная сумма кредита 100к
         $loan = max(100000.0, $cost - $down);
 
-        $matched = $this->products->findActiveMatching($region, $propertyType, $loan, $term);
+        // Фильтрация по program_type: mortgage или mortgage_refinance
+        $matched = $this->products->findActiveByProgramType($programType, $loan, $term);
 
         $offers = [];
         foreach ($matched as $p) {

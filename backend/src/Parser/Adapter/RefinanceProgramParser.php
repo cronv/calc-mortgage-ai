@@ -236,7 +236,7 @@ class RefinanceProgramParser extends AbstractProgramParser
             'bank_name' => $bankName,
             'bank_logo_url' => $bankLogo,
             'program_name' => $programName,
-            'program_type' => 'REFINANCE', // Явно указываем REFINANCE
+            'program_type' => $this->getProductType(), // Передаём mortgage_refinance из getProductType()
             'interest_rate_min' => number_format((float) $rateMin, 2, '.', ''),
             'interest_rate_max' => number_format((float) $rateMax, 2, '.', ''),
             'min_down_payment_percent' => number_format((float) $downPayment, 2, '.', ''),

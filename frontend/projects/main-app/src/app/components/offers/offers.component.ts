@@ -179,14 +179,14 @@ export class OffersComponent {
     // Перезагрузка предложений с дебаунсом при изменении параметров.
     effect((onCleanup) => {
       const i = this.svc.input();
-      const q = i.tab === 'refinance'
-        ? { cost: i.currentBalance, down: 0, termMonths: i.months, propertyType: 'REFINANCE' }
-        : {
-            cost: i.mode === 'by_payment' ? this.svc.loan() + i.down : i.cost,
-            down: i.down,
-            termMonths: i.months,
-            propertyType: i.propertyType,
-          };
+      // Определяем program_type на основе вкладки (mortgage или mortgage_refinance)
+      const programType = i.tab === 'refinance' ? 'mortgage_refinance' : 'mortgage';
+      const q = {
+        cost: i.tab === 'refinance' ? i.currentBalance : (i.mode === 'by_payment' ? this.svc.loan() + i.down : i.cost),
+        down: i.down,
+        termMonths: i.months,
+        programType,
+      };
       const t = setTimeout(() => {
         this.visible.set(PAGE);
         void this.osvc.load(q);

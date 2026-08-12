@@ -19,10 +19,38 @@ class BankProductRepository extends ServiceEntityRepository
     }
 
     /**
+     * Активные продукты по типу программы (mortgage, mortgage_refinance).
+     * Фильтрует по диапазону суммы и срока.
+     *
+     * @return BankProduct[]
+     */
+    public function findActiveByProgramType(
+        string $programType,
+        float $loanAmount,
+        int $termMonths,
+    ): array {
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.isActive = :active')->setParameter('active', true)
+            ->andWhere('p.programType = :programType')->setParameter('programType', $programType)
+            ->andWhere('p.loanTermMinMonths <= :term')
+            ->andWhere('p.loanTermMaxMonths >= :term')
+            ->setParameter('term', $termMonths);
+
+        if ($loanAmount > 0) {
+            $qb->andWhere('(p.minLoanAmount IS NULL OR p.minLoanAmount <= :loan)')
+               ->andWhere('(p.maxLoanAmount IS NULL OR p.maxLoanAmount >= :loan)')
+               ->setParameter('loan', $loanAmount);
+        }
+
+        return $qb->orderBy('p.interestRateMin', 'ASC')->getQuery()->getResult();
+    }
+
+    /**
      * Активные продукты под заданные сумму, срок, регион и тип недвижимости.
      * Один запрос без N+1: возвращаем плоский список сущностей.
      *
      * @return BankProduct[]
+     * @deprecated Используйте findActiveByProgramType()
      */
     public function findActiveMatching(
         string $region,
