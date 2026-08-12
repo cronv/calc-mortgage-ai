@@ -240,6 +240,7 @@ class MortgageProgramParser extends AbstractProgramParser
             'bank_logo_url' => $bankLogo,
             'program_name' => $programName,
             'program_type' => $this->determineProgramType($programName),
+            'product_type' => $this->getProductType(), // Передаём productType из парсера (mortgage)
             'interest_rate_min' => number_format((float) $rateMin, 2, '.', ''),
             'interest_rate_max' => number_format((float) $rateMax, 2, '.', ''),
             'min_down_payment_percent' => number_format((float) $downPayment, 2, '.', ''),

@@ -25,7 +25,8 @@ export interface MatchQuery {
   cost: number;
   down: number;
   termMonths: number;
-  propertyType: string;
+  propertyType?: string; // Опционально
+  programType?: string;  // mortgage или mortgage_refinance
 }
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
@@ -47,8 +48,15 @@ export class OffersService {
       const params = new HttpParams()
         .set('cost', String(Math.round(q.cost)))
         .set('down_payment', String(Math.round(q.down)))
-        .set('term', String(q.termMonths))
-        .set('property_type', q.propertyType);
+        .set('term', String(q.termMonths));
+      
+      // Передаём program_type вместо property_type для фильтрации по типу программы
+      if (q.programType) {
+        params.set('program_type', q.programType);
+      } else if (q.propertyType) {
+        params.set('property_type', q.propertyType);
+      }
+      
       const res = await firstValueFrom(
         this.http.get<{ offers: BankOffer[] }>('/api/v1/calculator/match', { params }),
       );

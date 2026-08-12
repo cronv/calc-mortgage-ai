@@ -40,6 +40,10 @@ class BankProduct
     #[ORM\Column(length: 20)]
     private string $programType = 'STANDARD';
 
+    /** mortgage | mortgage_refinance - тип продукта из парсера */
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $productType = null;
+
     #[ORM\Column(type: 'decimal', precision: 5, scale: 2)]
     private string $interestRateMin = '0.00';
 
@@ -127,6 +131,9 @@ class BankProduct
 
     public function getProgramType(): string { return $this->programType; }
     public function setProgramType(string $v): self { $this->programType = $v; return $this; }
+
+    public function getProductType(): ?string { return $this->productType; }
+    public function setProductType(?string $v): self { $this->productType = $v; return $this; }
 
     public function getInterestRateMin(): string { return $this->interestRateMin; }
     public function setInterestRateMin(string $v): self { $this->interestRateMin = $v; return $this; }

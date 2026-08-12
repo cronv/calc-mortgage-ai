@@ -120,6 +120,7 @@ abstract class AbstractProgramParser
             ->setBankLogoUrl($data['bank_logo_url'] ?? null)
             ->setProgramName($data['program_name'] ?? 'Ипотека')
             ->setProgramType($data['program_type'] ?? 'STANDARD')
+            ->setProductType($data['product_type'] ?? null) // productType от парсера (mortgage, mortgage_refinance)
             ->setInterestRateMin($data['interest_rate_min'] ?? '0.00')
             ->setInterestRateMax($data['interest_rate_max'] ?? '0.00')
             ->setMinDownPaymentPercent($data['min_down_payment_percent'] ?? '15.00')

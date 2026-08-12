@@ -1,25 +1,32 @@
 # Dependencies
 vendor/
-composer.lock
 
-# Logs
-*.log
-logs/
+# Compiled and build artifacts
+*.php~
 
 # Environment
 .env
 .env.local
 .env.*
 
-# IDE
+# Logs and temp files
+*.log
+*.tmp
+
+# Editors
 .vscode/
 .idea/
 *.swp
-*.swo
 
-# OS
-.DS_Store
-Thumbs.db
+# Cache directories
+.cache/
+.php_cs.cache
 
-# Tests
+# Distribution and build artifacts
+dist/
+build/
+*.phar
+
+# Testing
 .phpunit.result.cache
+.phpspec/

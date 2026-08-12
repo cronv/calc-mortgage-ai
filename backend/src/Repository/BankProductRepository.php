@@ -19,33 +19,47 @@ class BankProductRepository extends ServiceEntityRepository
     }
 
     /**
-     * Активные продукты под заданные сумму, срок, регион и тип недвижимости.
+     * Активные продукты под заданные сумму, срок, регион и тип недвижимости/программы.
      * Один запрос без N+1: возвращаем плоский список сущностей.
      *
      * @return BankProduct[]
      */
     public function findActiveMatching(
-        string $region,
-        string $propertyType,
-        float $loanAmount,
-        int $termMonths,
+        \App\DTO\ProductMatchCriteria $criteria,
     ): array {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.isActive = :active')->setParameter('active', true)
             ->andWhere('p.loanTermMinMonths <= :term')
             ->andWhere('p.loanTermMaxMonths >= :term')
-            ->setParameter('term', $termMonths);
+            ->setParameter('term', $criteria->termMonths);
 
-        if ($region !== 'ALL') {
-            $qb->andWhere('p.region IN (:regions)')->setParameter('regions', [$region, 'ALL']);
+        if ($criteria->region !== 'ALL') {
+            $qb->andWhere('p.region IN (:regions)')->setParameter('regions', [$criteria->region, 'ALL']);
         }
-        if ($propertyType !== 'ALL') {
-            $qb->andWhere('p.propertyType IN (:ptypes)')->setParameter('ptypes', [$propertyType, 'ALL']);
+        
+        // Фильтрация по propertyType (опционально)
+        if ($criteria->propertyType !== null && $criteria->propertyType !== 'ALL') {
+            $qb->andWhere('p.propertyType IN (:ptypes)')->setParameter('ptypes', [$criteria->propertyType, 'ALL']);
         }
-        if ($loanAmount > 0) {
+        
+        // Фильтрация по programType (mortgage или mortgage_refinance)
+        if ($criteria->programType !== null) {
+            // Сопоставляем productType из парсера с program_type в БД
+            // mortgage -> STANDARD, GOVERNMENT
+            // mortgage_refinance -> REFINANCE
+            if ($criteria->programType === 'mortgage') {
+                $qb->andWhere('p.programType IN (:progTypes)')
+                   ->setParameter('progTypes', ['STANDARD', 'GOVERNMENT']);
+            } elseif ($criteria->programType === 'mortgage_refinance') {
+                $qb->andWhere('p.programType = :refinanceType')
+                   ->setParameter('refinanceType', 'REFINANCE');
+            }
+        }
+        
+        if ($criteria->loanAmount > 0) {
             $qb->andWhere('(p.minLoanAmount IS NULL OR p.minLoanAmount <= :loan)')
                ->andWhere('(p.maxLoanAmount IS NULL OR p.maxLoanAmount >= :loan)')
-               ->setParameter('loan', $loanAmount);
+               ->setParameter('loan', $criteria->loanAmount);
         }
 
         return $qb->orderBy('p.interestRateMin', 'ASC')->getQuery()->getResult();
