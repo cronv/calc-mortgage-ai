@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\DTO\ProductMatchCriteria;
 use App\Entity\BankProduct;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,33 +20,37 @@ class BankProductRepository extends ServiceEntityRepository
     }
 
     /**
-     * Активные продукты под заданные сумму, срок, регион и тип недвижимости.
+     * Активные продукты под заданные критерии: регион, тип недвижимости, тип программы, сумму и срок.
      * Один запрос без N+1: возвращаем плоский список сущностей.
      *
      * @return BankProduct[]
      */
-    public function findActiveMatching(
-        string $region,
-        string $propertyType,
-        float $loanAmount,
-        int $termMonths,
-    ): array {
+    public function findActiveMatching(ProductMatchCriteria $criteria): array
+    {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.isActive = :active')->setParameter('active', true)
             ->andWhere('p.loanTermMinMonths <= :term')
             ->andWhere('p.loanTermMaxMonths >= :term')
-            ->setParameter('term', $termMonths);
+            ->setParameter('term', $criteria->termMonths);
 
-        if ($region !== 'ALL') {
-            $qb->andWhere('p.region IN (:regions)')->setParameter('regions', [$region, 'ALL']);
+        if ($criteria->region !== 'ALL') {
+            $qb->andWhere('p.region IN (:regions)')->setParameter('regions', [$criteria->region, 'ALL']);
         }
-        if ($propertyType !== 'ALL') {
-            $qb->andWhere('p.propertyType IN (:ptypes)')->setParameter('ptypes', [$propertyType, 'ALL']);
+        
+        // propertyType теперь необязательный параметр
+        if ($criteria->propertyType !== null && $criteria->propertyType !== 'ALL') {
+            $qb->andWhere('p.propertyType IN (:ptypes)')->setParameter('ptypes', [$criteria->propertyType, 'ALL']);
         }
-        if ($loanAmount > 0) {
+        
+        // programType — новый обязательный фильтр для разделения mortgage / mortgage_refinance
+        if ($criteria->programType !== null && $criteria->programType !== 'ALL') {
+            $qb->andWhere('p.programType = :ptype')->setParameter('ptype', $criteria->programType);
+        }
+        
+        if ($criteria->loanAmount > 0) {
             $qb->andWhere('(p.minLoanAmount IS NULL OR p.minLoanAmount <= :loan)')
                ->andWhere('(p.maxLoanAmount IS NULL OR p.maxLoanAmount >= :loan)')
-               ->setParameter('loan', $loanAmount);
+               ->setParameter('loan', $criteria->loanAmount);
         }
 
         return $qb->orderBy('p.interestRateMin', 'ASC')->getQuery()->getResult();
