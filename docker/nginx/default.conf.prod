@@ -15,7 +15,7 @@ server {
 }
 
 server {
-    isten 443 ssl http2;
+    listen 443 ssl http2;
     server_name vash-domen.ru www.vash-domen.ru; # ЗАМЕНИТЕ НА ВАШ ДОМЕН
 
     # Пути к сертификатам (должны лежать в ./docker/nginx/ssl/)
