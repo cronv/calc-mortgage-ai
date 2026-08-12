@@ -25,7 +25,8 @@ export interface MatchQuery {
   cost: number;
   down: number;
   termMonths: number;
-  propertyType: string;
+  propertyType?: string;
+  programType: string;
 }
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
@@ -48,7 +49,13 @@ export class OffersService {
         .set('cost', String(Math.round(q.cost)))
         .set('down_payment', String(Math.round(q.down)))
         .set('term', String(q.termMonths))
-        .set('property_type', q.propertyType);
+        .set('program_type', q.programType);
+      
+      // propertyType теперь опционален, передаём только если задан
+      if (q.propertyType) {
+        params = params.set('property_type', q.propertyType);
+      }
+      
       const res = await firstValueFrom(
         this.http.get<{ offers: BankOffer[] }>('/api/v1/calculator/match', { params }),
       );
