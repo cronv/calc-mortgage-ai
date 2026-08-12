@@ -45,7 +45,7 @@ export class OffersService {
     const id = ++this.requestId;
     this.state.set('loading');
     try {
-      const params = new HttpParams()
+      let params = new HttpParams()
         .set('cost', String(Math.round(q.cost)))
         .set('down_payment', String(Math.round(q.down)))
         .set('term', String(q.termMonths))
