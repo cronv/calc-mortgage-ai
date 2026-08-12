@@ -40,7 +40,7 @@ export function parseShareUrl(): Partial<CalcInput> | null {
   };
 
   const out: Partial<CalcInput> = {};
-  const tab = pick('t', ['mortgage', 'refinance'] as const);
+  const tab = pick('t', ['mortgage', 'mortgage_refinance'] as const);
   if (tab) out.tab = tab;
   const mode = pick('m', ['by_cost', 'by_payment'] as const);
   if (mode) out.mode = mode;

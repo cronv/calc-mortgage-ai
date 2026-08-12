@@ -6,7 +6,7 @@ import {
 import { parseShareUrl } from '../core/share-link';
 
 /** Вкладка калькулятора (по макету: Ипотека / Рефинансирование). */
-export type CalcTab = 'mortgage' | 'refinance';
+export type CalcTab = 'mortgage' | 'mortgage_refinance';
 
 /** Режим ввода: от стоимости или от желаемого платежа. */
 export type CalcMode = 'by_cost' | 'by_payment';
@@ -53,7 +53,7 @@ export interface CalcInput {
     rate: number;
     paymentType: PaymentType;
     program: ProgramKey;
-    propertyType: PropertyKey;
+    propertyType: PropertyKey | '';
     currentBalance: number;
     currentRate: number;
     currentPayment: number;
@@ -69,7 +69,7 @@ const DEFAULTS: CalcInput = {
     rate: 15.5,
     paymentType: 'ann',
     program: 'STANDARD',
-    propertyType: 'SECONDARY',
+    propertyType: '',
     currentBalance: 3_000_000,
     currentRate: 18.5,
     currentPayment: 45_000,
@@ -94,7 +94,7 @@ export class MortgageService {
     /** Эффективная ставка: льготная программа ограничивает ставку сверху. */
     readonly effectiveRate = computed(() => {
         const i = this.input();
-        let r = i.tab === 'refinance' ? i.rate : i.rate;
+        let r = i.tab === 'mortgage_refinance' ? i.rate : i.rate;
         if (i.tab === 'mortgage') {
             const cap = PROGRAM_RATE_CAP[i.program];
             if (cap !== undefined) r = Math.min(r, cap);
@@ -105,7 +105,7 @@ export class MortgageService {
     /** Сумма кредита. */
     readonly loan = computed(() => {
         const i = this.input();
-        if (i.tab === 'refinance') return Math.max(0, i.currentBalance);
+        if (i.tab === 'mortgage_refinance') return Math.max(0, i.currentBalance);
         if (i.mode === 'by_payment') {
             return Math.max(0, loanFromPayment(i.desiredPayment, i.months, this.effectiveRate()));
         }
@@ -115,7 +115,7 @@ export class MortgageService {
     /** Оценка стоимости объекта (для налогового вычета в режиме «по платежу»). */
     readonly estimatedCost = computed(() => {
         const i = this.input();
-        if (i.tab === 'refinance') return i.currentBalance;
+        if (i.tab === 'mortgage_refinance') return i.currentBalance;
         return i.mode === 'by_payment' ? this.loan() + i.down : i.cost;
     });
 
@@ -154,7 +154,7 @@ export class MortgageService {
         annuityPayment(this.input().currentBalance, this.input().months, this.effectiveRate()));
     readonly refinanceSaving = computed(() => {
         const i = this.input();
-        if (i.tab !== 'refinance') return 0;
+        if (i.tab !== 'mortgage_refinance') return 0;
         return Math.round((i.currentPayment - this.refinanceNewPayment()) * i.months);
     });
 

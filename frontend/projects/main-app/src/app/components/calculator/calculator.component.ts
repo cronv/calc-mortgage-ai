@@ -23,9 +23,9 @@ import { PaymentChartComponent } from '../payment-chart/payment-chart.component'
       <button type="button" role="tab" [class.on]="svc.input().tab === 'mortgage'"
               [attr.aria-selected]="svc.input().tab === 'mortgage'"
               (click)="svc.switchTab('mortgage')">Ипотека</button>
-      <button type="button" role="tab" [class.on]="svc.input().tab === 'refinance'"
-              [attr.aria-selected]="svc.input().tab === 'refinance'"
-              (click)="svc.switchTab('refinance')">Рефинансирование</button>
+      <button type="button" role="tab" [class.on]="svc.input().tab === 'mortgage_refinance'"
+              [attr.aria-selected]="svc.input().tab === 'mortgage_refinance'"
+              (click)="svc.switchTab('mortgage_refinance')">Рефинансирование</button>
     </div>
 
     <div class="calc">
@@ -88,7 +88,7 @@ import { PaymentChartComponent } from '../payment-chart/payment-chart.component'
               </label>
               <div class="chips">
                 @for (c of chips; track c.key) {
-                  <button type="button" [class.dark]="c.key === 'SECONDARY'"
+                  <button type="button" [class.dark]="svc.input().propertyType === c.key"
                           [class.on]="svc.input().propertyType === c.key"
                           (click)="applyChip(c.key)">
                     {{ c.label }} <b>от {{ c.rate }}%</b>

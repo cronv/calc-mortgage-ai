@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { MortgageService, PROPERTY_PRESETS } from '../../services/mortgage.service';
-import { OffersService, BankOffer } from '../../services/offers.service';
+import {OffersService, BankOffer, MatchQuery} from '../../services/offers.service';
 import { ApplicationFlowService } from '../../services/application-flow.service';
 import { ModalComponent } from '../modal/modal.component';
 import { ApplicationFormComponent } from '../application-form/application-form.component';
@@ -179,14 +179,18 @@ export class OffersComponent {
     // Перезагрузка предложений с дебаунсом при изменении параметров.
     effect((onCleanup) => {
       const i = this.svc.input();
-      const q = i.tab === 'refinance'
-        ? { cost: i.currentBalance, down: 0, termMonths: i.months, propertyType: 'REFINANCE' }
-        : {
-            cost: i.mode === 'by_payment' ? this.svc.loan() + i.down : i.cost,
-            down: i.down,
-            termMonths: i.months,
-            propertyType: i.propertyType,
-          };
+
+      let q: MatchQuery = {
+        cost: i.mode === 'by_payment' ? this.svc.loan() + i.down : i.cost,
+        down: i.down,
+        termMonths: i.months,
+        programType: i.tab,
+      };
+
+      if (i.propertyType) {
+        q.propertyType = i.propertyType;
+      }
+
       const t = setTimeout(() => {
         this.visible.set(PAGE);
         void this.osvc.load(q);
