@@ -341,7 +341,13 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     list.innerHTML = shown.map((o) => `
       <div class="card">
         <div class="chead">
-          <div class="logo">${(o.bank_name || 'Б').charAt(0)}</div>
+          <div class="logo">
+            @if (o.bank_logo_url) {
+                <img [src]="o.bank_logo_url" [alt]="o.bank_name" class="ologo-img" />
+            } @else {
+                {{ o.bank_name.charAt(0) }}
+            }
+          </div>
           <div class="bname"><b></b><span>Вторичное жильё</span></div>
           <div class="cpay"><b>${fmt(o.monthly_payment)} ₽/мес</b><span>от ${o.calculated_rate}%</span></div>
         </div>
