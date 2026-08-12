@@ -10,7 +10,17 @@ upstream php_fpm {
 
 server {
     listen 80;
-    server_name _;
+    server_name ваш-домен.ru www.ваш-домен.ru;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    isten 443 ssl http2;
+    server_name vash-domen.ru www.vash-domen.ru; # ЗАМЕНИТЕ НА ВАШ ДОМЕН
+
+    # Пути к сертификатам (должны лежать в ./docker/nginx/ssl/)
+    ssl_certificate /etc/nginx/ssl/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/privkey.pem;
     root /var/www/main;
     index index.html;
 
@@ -53,7 +63,6 @@ server {
     location /widget/ {
         alias /var/www/widget/;
         add_header Access-Control-Allow-Origin "*" always;
-        add_header Cache-Control "public, max-age=3600";
         try_files $uri $uri/ =404;
     }
 
