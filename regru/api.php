@@ -24,7 +24,6 @@ $params = [
     'down_payment' => $down_payment,
     'term' => $term,
     'program_type' => $program_type,
-    'property_type' => $property_type,
 ];
 
 if (!empty($property_type)) {
