@@ -22,6 +22,7 @@ interface Offer {
   bank_name: string;
   program_name: string;
   program_type: string;
+  bank_logo_url?: string;
   calculated_rate: number;
   monthly_payment: number;
   overpayment: number;
@@ -338,7 +339,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       return;
     }
 
-    list.innerHTML = shown.map((o) => {
+    list.innerHTML = shown.map((o: Offer) => {
       const logoContent = o.bank_logo_url
         ? `<img src="${o.bank_logo_url}" alt="${o.bank_name}" class="ologo-img" style="width:100%;height:100%;object-fit:contain;border-radius:10px;" />`
         : o.bank_name.charAt(0).toUpperCase();
