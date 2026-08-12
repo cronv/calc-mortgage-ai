@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**
  * Парсер для стандартной ипотеки (mortgage).
- * 
+ *
  * Анализ API banki.ru:
  * 1. GET /bff/catalog/api/v1/widget/group — возвращает список банков с программами
  *    Параметры:
@@ -18,10 +18,10 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
  *    - requestedAmount, requestedTerm, initialFee — параметры калькулятора
  *    - regionId — регион (4 = Москва)
  *    - page, limit — пагинация
- * 
+ *
  * 2. GET /bff/catalog/api/v2/products?uids[]=... — детальная информация по продуктам
  *    uids[] — массив ID продуктов из первого запроса
- * 
+ *
  * UID формируется как: <bank_id><product_type_id>
  * Например: 1273406 где 12734 — bank_id, 06 — product_type_id (mortgage)
  */
@@ -44,7 +44,7 @@ class MortgageProgramParser extends AbstractProgramParser
 
     /**
      * Генератор: парсит ипотечные программы порционно.
-     * 
+     *
      * @param int $limit Максимальное количество программ для возврата
      * @return \Generator<\App\Entity\BankProduct>
      */
@@ -239,7 +239,7 @@ class MortgageProgramParser extends AbstractProgramParser
             'bank_name' => $bankName,
             'bank_logo_url' => $bankLogo,
             'program_name' => $programName,
-            'program_type' => $this->determineProgramType($programName),
+            'program_type' => $this->getProductType(),
             'interest_rate_min' => number_format((float) $rateMin, 2, '.', ''),
             'interest_rate_max' => number_format((float) $rateMax, 2, '.', ''),
             'min_down_payment_percent' => number_format((float) $downPayment, 2, '.', ''),
