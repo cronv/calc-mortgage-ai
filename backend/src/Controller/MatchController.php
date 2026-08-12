@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\DTO\ProductSearchCriteria;
 use App\Repository\BankProductRepository;
 use App\Repository\GovernmentProgramRepository;
 use App\Service\MortgageCalculator;
@@ -43,7 +44,12 @@ final class MatchController extends AbstractController
         }
 
         $region = (string) $request->query->get('region', 'ALL');
-        $propertyType = (string) $request->query->get('property_type', 'ALL');
+        // programType передаётся с фронта как 'mortgage' или 'mortgage_refinance'
+        $programType = (string) $request->query->get('program_type', 'mortgage');
+        // propertyType остаётся как опциональный фильтр по типу недвижимости
+        $propertyType = $request->query->has('property_type') 
+            ? (string) $request->query->get('property_type') 
+            : null;
         $hasInsurance = (bool) (int) $request->query->get('has_insurance', '1');
         $isSalary = (bool) (int) $request->query->get('is_salary_client', '0');
         $electronic = (bool) (int) $request->query->get('electronic_registration', '0');
@@ -51,7 +57,16 @@ final class MatchController extends AbstractController
         // Минимальная сумма кредита 100к
         $loan = max(100000.0, $cost - $down);
 
-        $matched = $this->products->findActiveMatching($region, $propertyType, $loan, $term);
+        // Создаём DTO для поиска продуктов
+        $criteria = new ProductSearchCriteria(
+            region: $region,
+            propertyType: $propertyType,
+            programType: $programType,
+            loanAmount: $loan,
+            termMonths: $term,
+        );
+
+        $matched = $this->products->findActiveMatching($criteria);
 
         $offers = [];
         foreach ($matched as $p) {

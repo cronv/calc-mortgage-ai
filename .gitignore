@@ -1,25 +1,26 @@
+```gitignore
 # Dependencies
 vendor/
 composer.lock
 
-# Logs
+# Logs and temp files
 *.log
-logs/
+*.tmp
 
 # Environment
 .env
 .env.local
-.env.*
+*.env.*
 
-# IDE
+# Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# OS
+# OS generated files
 .DS_Store
 Thumbs.db
 
-# Tests
-.phpunit.result.cache
+# PHP specific
+*.php~
+*.swp
+```

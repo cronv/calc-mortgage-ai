@@ -235,11 +235,14 @@ class MortgageProgramParser extends AbstractProgramParser
         // Первоначальный взнос
         $downPayment = $product['initialFeePercent'] ?? $offer['initialFeePercent'] ?? 15;
 
+        // programType определяется из productType парсера (mortgage -> STANDARD, mortgage_refinance -> REFINANCE)
+        $programType = $this->getProductType() === 'mortgage_refinance' ? 'REFINANCE' : $this->determineProgramType($programName);
+
         return $this->createBankProduct([
             'bank_name' => $bankName,
             'bank_logo_url' => $bankLogo,
             'program_name' => $programName,
-            'program_type' => $this->determineProgramType($programName),
+            'program_type' => $programType,
             'interest_rate_min' => number_format((float) $rateMin, 2, '.', ''),
             'interest_rate_max' => number_format((float) $rateMax, 2, '.', ''),
             'min_down_payment_percent' => number_format((float) $downPayment, 2, '.', ''),

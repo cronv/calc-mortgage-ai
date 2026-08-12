@@ -291,7 +291,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         cost: String(Math.round(cost)),
         down_payment: String(Math.round(num('down'))),
         term: String(months),
-        property_type: 'ALL',
+        program_type: 'mortgage',
       });
       const res = await fetch(`${cfg.apiBase}/api/v1/calculator/match?${q}`, { signal: aborter.signal });
       if (!res.ok) throw new Error(String(res.status));
