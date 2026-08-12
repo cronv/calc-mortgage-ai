@@ -11,7 +11,7 @@ $term = $_GET['term'] ?? null;
 $program_type = $_GET['program_type'] ?? null;
 $property_type = $_GET['property_type'] ?? null;
 
-if (empty($cost) || is_null($down_payment) || empty($term) || empty($program_type) || empty($property_type)) {
+if (empty($cost) || is_null($down_payment) || empty($term) || empty($program_type)) {
     http_response_code(400);
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Missing required parameters']);
@@ -26,6 +26,10 @@ $params = [
     'program_type' => $program_type,
     'property_type' => $property_type,
 ];
+
+if (!empty($property_type)) {
+    $params['property_type'] = $property_type;
+}
 
 // 3. ВАЖНО: Формируем URL с Query String (GET-параметры должны быть в ссылке!)
 $baseUrl = 'http://95.165.83.241:8080/api/v1/calculator/match';
