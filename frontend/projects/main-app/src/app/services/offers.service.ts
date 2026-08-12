@@ -71,16 +71,10 @@ export class OffersService {
 
   /** Соответствие предложения выбранной программе (фильтрация на клиенте). */
   matchesProgram(offer: BankOffer, program: ProgramKey): boolean {
-    const name = (offer.program_name || '').toLowerCase();
-    switch (program) {
-      case 'STANDARD':   return offer.program_type === 'STANDARD';
-      case 'FAMILY':     return name.includes('семейн');
-      case 'IT':         return name.includes('it') || name.includes('ит-');
-      case 'FAR_EAST':   return name.includes('дальневосточ');
-      case 'RURAL':      return name.includes('сельск');
-      case 'MILITARY':   return name.includes('военн');
-      case 'ARCTIC':     return name.includes('арктич');
-      default:           return true;
+    if (program === 'STANDARD') {
+      return offer.program_type === 'mortgage' || offer.program_type === 'mortgage_refinance';
     }
+    // Для остальных программ пока оставляем заглушку - можно расширить при необходимости
+    return true;
   }
 }
