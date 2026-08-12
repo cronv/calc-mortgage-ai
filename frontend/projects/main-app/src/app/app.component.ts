@@ -52,7 +52,7 @@ import { environment } from './environments/environment';
         <h1>{{ flow.stepNumber() === 1 ? 'Параметры кредита' : 'Контактные данные' }}</h1>
         <app-application-wizard />
       } @else {
-        <nav class="crumbs"><a href="#">Главная</a> <span>›</span> <span>Ипотека</span></nav>
+        <nav class="crumbs"><a href="{{ baseRedirectUrl }}">Главная</a> <span>›</span> <span>Ипотека</span></nav>
         <h1>Ипотечный калькулятор</h1>
 
         <div class="intro">
