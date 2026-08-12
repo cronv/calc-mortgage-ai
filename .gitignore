@@ -1,1 +1,25 @@
-Nothing should be ignored based on the provided file changes. The only modified file is a TypeScript service file (`frontend/projects/main-app/src/app/services/offers.service.ts`), which is source code and should not be added to .gitignore.
+# Dependencies
+vendor/
+composer.lock
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+.phpunit.result.cache
