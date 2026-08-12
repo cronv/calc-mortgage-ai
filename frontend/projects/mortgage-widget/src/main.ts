@@ -338,16 +338,14 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       return;
     }
 
-    list.innerHTML = shown.map((o) => `
+    list.innerHTML = shown.map((o) => {
+      const logoContent = o.bank_logo_url
+        ? `<img src="${o.bank_logo_url}" alt="${o.bank_name}" class="ologo-img" style="width:100%;height:100%;object-fit:contain;border-radius:10px;" />`
+        : o.bank_name.charAt(0).toUpperCase();
+      return `
       <div class="card">
         <div class="chead">
-          <div class="logo">
-            @if (o.bank_logo_url) {
-                <img [src]="o.bank_logo_url" [alt]="o.bank_name" class="ologo-img" />
-            } @else {
-                {{ o.bank_name.charAt(0) }}
-            }
-          </div>
+          <div class="logo">${logoContent}</div>
           <div class="bname"><b></b><span>Вторичное жильё</span></div>
           <div class="cpay"><b>${fmt(o.monthly_payment)} ₽/мес</b><span>от ${o.calculated_rate}%</span></div>
         </div>
@@ -356,7 +354,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
           <button type="button" class="apply">Отправить заявку</button>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     // Имена банков — через textContent (защита от инъекций в данных API).
     list.querySelectorAll('.bname b').forEach((el, i) => { el.textContent = shown[i].bank_name; });
