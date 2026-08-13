@@ -22,7 +22,7 @@ server {
     
     # Проверяем существование папки поддомена
     if (!-d /var/www/$subdomain) {
-        return 301 https://ваш-домен.ru$request_uri;
+        return 301 https://$host$request_uri;
     }
     
     return 301 https://$host$request_uri;
@@ -32,7 +32,7 @@ server {
 server {
     listen 80;
     server_name _;
-    return 301 https://ваш-домен.ru$request_uri;
+    return 301 https://$host$request_uri;
 }
 
 # ========== Основной домен: главная страница + API ==========
@@ -103,7 +103,7 @@ server {
 
     # Проверка существования папки поддомена - если нет, редирект на основной домен
     if (!-d /var/www/$subdomain) {
-        return 301 https://ваш-домен.ru$request_uri;
+        return 301 https://$host$request_uri;
     }
 
     # JS-скрипты с CORS заголовками
@@ -126,5 +126,5 @@ server {
     server_name _;
     ssl_certificate /etc/nginx/ssl/fullchain.pem;
     ssl_certificate_key /etc/nginx/ssl/privkey.pem;
-    return 301 https://ваш-домен.ru$request_uri;
+    return 301 https://$host$request_uri;
 }
