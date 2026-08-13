@@ -84,6 +84,36 @@ abstract class AbstractProgramParser
     }
 
     /**
+     * Определяет тип программы (таб) по названию.
+     * Возвращает значения: STANDARD, FAMILY, MILITARY, IT, FAR_EAST, ARCTIC, RURAL
+     */
+    protected function determineTabsType(string $name): string
+    {
+        $nameLower = mb_strtolower($name);
+
+        if (str_contains($nameLower, 'семейн')) {
+            return 'FAMILY';
+        }
+        if (str_contains($nameLower, 'военн')) {
+            return 'MILITARY';
+        }
+        if (str_contains($nameLower, 'it') || str_contains($nameLower, 'ит-')) {
+            return 'IT';
+        }
+        if (str_contains($nameLower, 'дальневосточ')) {
+            return 'FAR_EAST';
+        }
+        if (str_contains($nameLower, 'арктич')) {
+            return 'ARCTIC';
+        }
+        if (str_contains($nameLower, 'сельск')) {
+            return 'RURAL';
+        }
+
+        return 'STANDARD';
+    }
+
+    /**
      * Определяет тип недвижимости по названию программы.
      */
     protected function determinePropertyType(string $name): string
@@ -128,6 +158,7 @@ abstract class AbstractProgramParser
             ->setLoanTermMinMonths($data['loan_term_min_months'] ?? 12)
             ->setLoanTermMaxMonths($data['loan_term_max_months'] ?? 360)
             ->setPropertyType($data['property_type'] ?? 'ALL')
+            ->setTabsType($data['tabs_type'] ?? $this->determineTabsType($data['program_name'] ?? ''))
             ->setRegion($data['region'] ?? 'ALL')
             ->setApplicationUrl($data['application_url'] ?? null)
             ->setSourceUrl($data['source_url'] ?? null)

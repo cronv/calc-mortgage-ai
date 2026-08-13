@@ -65,6 +65,10 @@ class BankProduct
     #[ORM\Column(length: 20)]
     private string $propertyType = 'ALL';
 
+    /** STANDARD | FAMILY | MILITARY | IT | FAR_EAST | ARCTIC | RURAL | ALL */
+    #[ORM\Column(length: 20)]
+    private string $tabsType = 'ALL';
+
     #[ORM\Column(type: 'boolean')]
     private bool $insuranceRequired = true;
 
@@ -151,6 +155,9 @@ class BankProduct
 
     public function getPropertyType(): string { return $this->propertyType; }
     public function setPropertyType(string $v): self { $this->propertyType = $v; return $this; }
+
+    public function getTabsType(): string { return $this->tabsType; }
+    public function setTabsType(string $v): self { $this->tabsType = $v; return $this; }
 
     public function isInsuranceRequired(): bool { return $this->insuranceRequired; }
     public function setInsuranceRequired(bool $v): self { $this->insuranceRequired = $v; return $this; }

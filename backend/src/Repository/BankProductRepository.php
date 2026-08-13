@@ -42,6 +42,11 @@ class BankProductRepository extends ServiceEntityRepository
             $qb->andWhere('p.propertyType IN (:ptypes)')->setParameter('ptypes', [$criteria->propertyType]);
         }
 
+        // tabsType — фильтр по типу программы (табу) виджета
+        if ($criteria->tabsType) {
+            $qb->andWhere('p.tabsType = :tabsType')->setParameter('tabsType', $criteria->tabsType);
+        }
+
         // programType — новый обязательный фильтр для разделения mortgage / mortgage_refinance
         if ($criteria->programType) {
             $qb->andWhere('p.programType = :ptype')->setParameter('ptype', $criteria->programType);

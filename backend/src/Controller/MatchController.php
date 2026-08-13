@@ -44,6 +44,7 @@ final class MatchController extends AbstractController
 
         $region = (string) $request->query->get('region', 'ALL');
         $propertyType = (string) $request->query->get('property_type', null);
+        $tabsType = (string) $request->query->get('tabs_type', null);
         $programType = (string) $request->query->get('program_type', null);
         $hasInsurance = (bool) (int) $request->query->get('has_insurance', '1');
         $isSalary = (bool) (int) $request->query->get('is_salary_client', '0');
@@ -55,6 +56,7 @@ final class MatchController extends AbstractController
         $matched = $this->products->findActiveMatching(new \App\DTO\ProductMatchCriteria(
             region: $region,
             propertyType: $propertyType,
+            tabsType: $tabsType,
             programType: $programType,
             loanAmount: $loan,
             termMonths: $term,
