@@ -9,19 +9,14 @@ upstream php_fpm {
 # ========== HTTP → HTTPS редирект для основного домена и www ==========
 server {
     listen 80;
-    server_name ваш-домен.ru www.ваш-домен.ru;
+    server_name sber.ru www.sber.ru;
     return 301 https://$host$request_uri;
 }
 
 # ========== HTTP → HTTPS редирект для всех поддоменов ==========
 server {
     listen 80;
-    server_name ~^(?<subdomain>[a-z0-9_-]+)\.ваш-домен\.ru$;
-    
-    # Проверяем существование папки поддомена
-    if (!-d /var/www/$subdomain) {
-        return 301 https://$host$request_uri;
-    }
+    server_name ~^(?<subdomain>[a-z0-9_-]+)\.sber\.ru$;
     
     return 301 https://$host$request_uri;
 }
@@ -36,9 +31,9 @@ server {
 # ========== Основной домен: главная страница + API ==========
 server {
     listen 443 ssl http2;
-    server_name ваш-домен.ru www.ваш-домен.ru; # ЗАМЕНИТЕ НА ВАШ ДОМЕН
+    server_name sber.ru www.sber.ru;
 
-    # Пути к сертификатам (должны лежать в ./docker/nginx/ssl/)
+    # Пути к сертификатам
     ssl_certificate /etc/nginx/ssl/fullchain.pem;
     ssl_certificate_key /etc/nginx/ssl/privkey.pem;
     root /var/www/main;
@@ -72,9 +67,9 @@ server {
 # ========== Динамические поддомены: раздача контента из папок ==========
 server {
     listen 443 ssl http2;
-    server_name ~^(?<subdomain>[a-z0-9_-]+)\.ваш-домен\.ru$; # ЗАМЕНИТЕ НА ~^(?<subdomain>[a-z0-9_-]+)\.ваш-домен\.ru$
+    server_name ~^(?<subdomain>[a-z0-9_-]+)\.sber\.ru$;
 
-    # Пути к сертификатам (должны лежать в ./docker/nginx/ssl/)
+    # Пути к сертификатам
     ssl_certificate /etc/nginx/ssl/fullchain.pem;
     ssl_certificate_key /etc/nginx/ssl/privkey.pem;
 
@@ -82,13 +77,11 @@ server {
     root /var/www/$subdomain;
     index index.html;
 
-    # Проверка существования папки поддомена - если нет, редирект на основной домен
-    if (!-d /var/www/$subdomain) {
-        return 301 https://$host$request_uri;
-    }
+    # Логирование для отладки
+    access_log /var/log/nginx/subdomain_access.log;
+    error_log /var/log/nginx/subdomain_error.log;
 
     # ---------- API → Symfony front controller (PHP-FPM) ----------
-    # Доступно для всех поддоменов
     include /etc/nginx/api_location.conf;
 
     # JS-скрипты с CORS заголовками
@@ -102,6 +95,11 @@ server {
     location / {
         add_header Access-Control-Allow-Origin "*" always;
         try_files $uri $uri/ =404;
+    }
+
+    # Если папка не существует - редирект на главный домен
+    location @missing_subdomain {
+        return 301 https://sber.ru$request_uri;
     }
 }
 
