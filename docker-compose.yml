@@ -93,7 +93,8 @@ services:
       - "${HTTP_PORT:-8080}:80"
       - "443:443"
     volumes:
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/default.conf.prod:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/api_location.conf:/etc/nginx/api_location.conf:ro
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./docker/nginx/ssl:/etc/nginx/ssl:ro
       - ./backend/public:/var/www/html/public:ro
