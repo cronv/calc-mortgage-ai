@@ -38,7 +38,7 @@ server {
 # ========== Основной домен: главная страница + API ==========
 server {
     listen 443 ssl http2;
-    server_name vash-domen.ru www.vash-domen.ru; # ЗАМЕНИТЕ НА ВАШ ДОМЕН
+    server_name ваш-домен.ru www.ваш-домен.ru; # ЗАМЕНИТЕ НА ВАШ ДОМЕН
 
     # Пути к сертификатам (должны лежать в ./docker/nginx/ssl/)
     ssl_certificate /etc/nginx/ssl/fullchain.pem;
@@ -91,7 +91,7 @@ server {
 # ========== Динамические поддомены: раздача контента из папок ==========
 server {
     listen 443 ssl http2;
-    server_name ~^(?<subdomain>[a-z0-9_-]+)\.vash-domen\.ru$; # ЗАМЕНИТЕ НА ~^(?<subdomain>[a-z0-9_-]+)\.ваш-домен\.ru$
+    server_name ~^(?<subdomain>[a-z0-9_-]+)\.ваш-домен\.ru$; # ЗАМЕНИТЕ НА ~^(?<subdomain>[a-z0-9_-]+)\.ваш-домен\.ru$
 
     # Пути к сертификатам (должны лежать в ./docker/nginx/ssl/)
     ssl_certificate /etc/nginx/ssl/fullchain.pem;
