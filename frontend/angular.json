@@ -52,12 +52,6 @@
                   "inline": false
                 }
               },
-              "fileReplacements": [
-                {
-                  "replace": "projects/main-app/src/app/environments/environment.ts",
-                  "with": "projects/main-app/src/app/environments/environment.prod.ts"
-                }
-              ]
             },
             "development": {
               "optimization": false,
