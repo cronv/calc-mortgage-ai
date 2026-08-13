@@ -51,8 +51,15 @@ const PAGE = 6;
                       }
                   </div>
                   <div class="obname">
+                    <div>
                       <b>{{ o.bank_name }}</b>
+                    </div>
+                    <div>
+                      <span>{{ o.program_name }}</span>
+                    </div>
+                    <div>
                       <span>{{ propertyLabel() }}</span>
+                    </div>
                   </div>
               </div>
 
