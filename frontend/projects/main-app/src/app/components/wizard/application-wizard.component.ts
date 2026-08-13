@@ -464,7 +464,13 @@ import { copyText } from '../../core/share-link';
           </div>
           @if (flow.offer(); as o) {
             <div class="sbank">
-              <div class="slogo">{{ o.bank_name.charAt(0) }}</div>
+              <div class="slogo">
+                @if (o.bank_logo_url) {
+                    <img [src]="o.bank_logo_url" [alt]="o.bank_name" class="slogo" />
+                } @else {
+                    {{ o.bank_name.charAt(0) }}
+                }
+              </div>
               <div>
                 <b>{{ o.bank_name }}</b>
                 <span>{{ d().propertyType || 'Ипотека' }} · {{ o.program_name }} · от {{ o.calculated_rate }}%</span>
