@@ -63,7 +63,7 @@ import { environment } from './environments/environment';
         <div class="cta">
           <div class="cta-info">
             <div class="ci">
-              <b>Перейдите в <a href="{{ baseRedirectUrl }}/login-server">личный кабинет</a></b>
+              <b>Перейдите в <a href="{{ baseRedirectUrl }}/login-user">личный кабинет</a></b>
               <span>и мы оповестим вас о сроках по продуктам</span>
             </div>
             <div class="ci">
