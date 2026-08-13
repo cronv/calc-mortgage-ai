@@ -1,13 +1,12 @@
 ```
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-
 # Environment
 .env
 .env.local
 .env.*
+
+# Logs and temp files
+*.log
+*.tmp
 
 # Editors
 .vscode/
@@ -15,8 +14,8 @@
 
 # Dependencies
 node_modules/
-venv/
 .venv/
+venv/
 __pycache__/
 .mypy_cache/
 .pytest_cache/
