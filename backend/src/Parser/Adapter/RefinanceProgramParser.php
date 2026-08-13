@@ -218,8 +218,8 @@ class RefinanceProgramParser extends AbstractProgramParser
         $programName = $product['name'] ?? $offer['productName'] ?? 'Рефинансирование';
 
         // Ставка
-        $rateMin = $product['rateFrom'] ?? $offer['rateFrom'] ?? 0;
-        $rateMax = $product['rateTo'] ?? $offer['rateTo'] ?? $rateMin;
+        $rateMin = $product['meta']['rateMin'] ?? 0;
+        $rateMax = $product['meta']['rateMax'] ?? $rateMin;
 
         // Сумма кредита
         $amountMin = $product['amountMin'] ?? null;
