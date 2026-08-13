@@ -245,6 +245,7 @@ class RefinanceProgramParser extends AbstractProgramParser
             'loan_term_min_months' => $termMinMonths,
             'loan_term_max_months' => $termMaxMonths,
             'property_type' => 'ALL', // Для рефинансирования тип недвижимости не критичен
+            'tabs_type' => null, // будет определён автоматически в createBankProduct через determineTabsType
             'region' => 'ALL',
             'application_url' => $product['applicationUrl'] ?? $offer['submitButton']['url'] ?? null,
             'source_url' => self::BASE_URL . '/services/calculators/hypothec/refinansirovanie_ipoteki/',

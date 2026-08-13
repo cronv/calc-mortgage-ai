@@ -35,6 +35,7 @@ final class Version20260101120000 extends AbstractMigration
                 loan_term_min_months INT NOT NULL,
                 loan_term_max_months INT NOT NULL,
                 property_type VARCHAR(20) NOT NULL,
+                tabs_type VARCHAR(20) NOT NULL DEFAULT 'ALL',
                 insurance_required TINYINT(1) NOT NULL,
                 rate_without_insurance NUMERIC(4, 2) NOT NULL,
                 salary_client_discount NUMERIC(4, 2) NOT NULL,
@@ -50,6 +51,7 @@ final class Version20260101120000 extends AbstractMigration
                 UNIQUE INDEX uniq_bank_program (bank_name, program_name),
                 INDEX idx_active_type (is_active, program_type),
                 INDEX idx_property_type (property_type),
+                INDEX idx_tabs_type (tabs_type),
                 INDEX idx_term_range (loan_term_min_months, loan_term_max_months),
                 INDEX idx_rate (interest_rate_min),
                 PRIMARY KEY(id)
