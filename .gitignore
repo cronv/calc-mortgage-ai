@@ -1,8 +1,0 @@
-```
-# Environment
-.env.local
-
-# SSL certificates (avoid committing sensitive keys)
-docker/nginx/ssl/fullchain.pem
-docker/nginx/ssl/privkey.pem
-```
