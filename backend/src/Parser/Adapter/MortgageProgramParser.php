@@ -232,8 +232,8 @@ class MortgageProgramParser extends AbstractProgramParser
         $termMinMonths = isset($product['termMin']) ? (int) round($product['termMin'] / 30.4375) : 12;
         $termMaxMonths = isset($product['termMax']) ? (int) round($product['termMax'] / 30.4375) : 360;
 
-        // Первоначальный взнос
-        $downPayment = $product['initialFeePercent'] ?? $offer['initialFeePercent'] ?? 15;
+        // Первоначальный взнос - извлекаем из data.features по label "Первоначальный взнос"
+        $downPayment = $this->extractDownPaymentFromFeatures($product, $offer);
 
         return $this->createBankProduct([
             'bank_name' => $bankName,
@@ -252,5 +252,58 @@ class MortgageProgramParser extends AbstractProgramParser
             'application_url' => $product['applicationUrl'] ?? $offer['submitButton']['url'] ?? null,
             'source_url' => self::BASE_URL . '/services/calculators/hypothec/',
         ]);
+    }
+
+    /**
+     * Извлекает процент первоначального взноса из data.features.
+     * Ищет feature с label "Первоначальный взнос" и парсит значение вида "от X%" или "X%".
+     *
+     * @param array $product Данные продукта из API
+     * @param array $offer Данные предложения из виджета
+     * @return float Процент первоначального взноса
+     */
+    private function extractDownPaymentFromFeatures(array $product, array $offer): float
+    {
+        // Пытаемся найти в product['data']['features']
+        $features = $product['data']['features'] ?? [];
+        foreach ($features as $feature) {
+            if (($feature['label'] ?? '') === 'Первоначальный взнос') {
+                $value = $feature['value'] ?? '';
+                $percent = $this->parsePercentFromValue($value);
+                if ($percent !== null) {
+                    return $percent;
+                }
+            }
+        }
+
+        // Пытаемся найти в offer['data']['features']
+        $offerFeatures = $offer['data']['features'] ?? [];
+        foreach ($offerFeatures as $feature) {
+            if (($feature['label'] ?? '') === 'Первоначальный взнос') {
+                $value = $feature['value'] ?? '';
+                $percent = $this->parsePercentFromValue($value);
+                if ($percent !== null) {
+                    return $percent;
+                }
+            }
+        }
+
+        // Fallback: пробуем старые поля
+        return (float) ($product['initialFeePercent'] ?? $offer['initialFeePercent'] ?? 15);
+    }
+
+    /**
+     * Парсит процент из строки вида "от 20.01%", "20%", "от 15.5 %" и т.п.
+     *
+     * @param string $value Строка со значением
+     * @return float|null Процент или null если не удалось распарсить
+     */
+    private function parsePercentFromValue(string $value): ?float
+    {
+        // Удаляем пробелы и ищем число с возможной десятичной точкой
+        if (preg_match('/(\d+[.,]?\d*)\s*%/', str_replace(' ', '', $value), $matches)) {
+            return (float) str_replace(',', '.', $matches[1]);
+        }
+        return null;
     }
 }
