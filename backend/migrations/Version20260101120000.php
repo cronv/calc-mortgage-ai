@@ -11,7 +11,7 @@ use Doctrine\Migrations\AbstractMigration;
  * Начальная схема ипотечного калькулятора: bank_products, government_programs, applications.
  * Индексы рассчитаны под высоконагруженные выборки маркетплейса предложений.
  */
-final class Version20260101120000f extends AbstractMigration
+final class Version20260101120000 extends AbstractMigration
 {
     public function getDescription(): string
     {
