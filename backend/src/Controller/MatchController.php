@@ -81,6 +81,7 @@ final class MatchController extends AbstractController
                 'bank_logo_url'      => $p->getBankLogoUrl(),
                 'program_name'       => $p->getProgramName(),
                 'program_type'       => $p->getProgramType(),
+                'tabs_type'          => $p->getTabsType(),
                 'calculated_rate'    => round($rate, 2),
                 'monthly_payment'    => round($payment, 0),
                 'overpayment'        => round(max(0, $total - $loan), 2),
