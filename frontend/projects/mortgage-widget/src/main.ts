@@ -22,6 +22,7 @@ interface Offer {
   bank_name: string;
   program_name: string;
   program_type: string;
+  tabs_type?: string;
   bank_logo_url?: string;
   calculated_rate: number;
   monthly_payment: number;
@@ -66,17 +67,7 @@ function loanFromPayment(payment: number, months: number, rate: number): number 
 const fmt = (n: number): string => Math.round(n).toLocaleString('ru-RU');
 
 function matchesProgram(o: Offer, key: string): boolean {
-  const n = (o.program_name || '').toLowerCase();
-  switch (key) {
-    case 'STANDARD': return o.program_type === 'STANDARD';
-    case 'FAMILY': return n.includes('семейн');
-    case 'IT': return n.includes('it') || n.includes('ит-');
-    case 'FAR_EAST': return n.includes('дальневосточ');
-    case 'RURAL': return n.includes('сельск');
-    case 'MILITARY': return n.includes('военн');
-    case 'ARCTIC': return n.includes('арктич');
-    default: return true;
-  }
+  return o.tabs_type === key;
 }
 
 function mount(host: HTMLElement, cfg: WidgetConfig): void {
