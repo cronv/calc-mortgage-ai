@@ -42,7 +42,7 @@ build: ## Только пересобрать образы
 	$(COMPOSE) build
 
 front-build: ## Пересобрать только фронтенд
-	$(COMPOSE) --profile build $(if $(CONFIG),--configuration=$(CONFIG)) run --rm node
+	$(COMPOSE) --profile build run --rm node
 
 bash: ## Шелл в PHP-контейнере
 	$(PHP) sh
