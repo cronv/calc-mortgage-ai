@@ -145,7 +145,8 @@ import { environment } from './environments/environment';
     .ci b a{color:var(--link)}
     .ci span{font-size:13px;color:var(--muted)}
     .cta-btns{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:24px;padding:12px 22px;font-size:14px;font-weight:600;background:var(--accent);color:#000}
+    .cta-btns .btn{font-size:14px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:24px;padding:12px 22px;font-weight:600;background:var(--accent);color:#000}
     .btn.ghost{background:#fff;border:1px solid #000}
 
     /* ---- Рассылка ---- */
@@ -175,6 +176,7 @@ import { environment } from './environments/environment';
     @media (max-width:620px){
       .geo{display:none}
       .ticons a:not(:last-child){display:none}
+      .cta-btns .btn{font-size:12px}
       .cta-btns{width:100%}
       .btn{flex:1;text-align:center}
       .sform{width:100%}
