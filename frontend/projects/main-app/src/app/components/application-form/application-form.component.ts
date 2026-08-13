@@ -23,8 +23,8 @@ type FormState = 'idle' | 'sending' | 'success' | 'error';
         <div class="obadge"><b>{{ o.bank_name }}</b> · {{ o.program_name }} · от {{ o.calculated_rate }}%</div>
 
         <div class="snap">
-          <div><span>Сумма кредита</span><b>{{ svc.loan() | number:'1.0-0' }} ₽</b></div>
           <div><span>Платёж</span><b>{{ o.monthly_payment | number:'1.0-0' }} ₽/мес</b></div>
+          <div><span>Сумма кредита</span><b>{{ svc.loan() | number:'1.0-0' }} ₽</b></div>
           <div><span>Ставка</span><b>{{ o.calculated_rate }}%</b></div>
         </div>
       }
