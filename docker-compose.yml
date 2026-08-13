@@ -63,23 +63,29 @@ services:
     container_name: mortgage_node
     working_dir: /app
     profiles: [build]
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=256"
     volumes:
-      - ./frontend:/app
+      - ./frontend:/app:delegated
       - node_modules:/app/node_modules
+      - npm_cache:/root/.npm
     command:
       - "sh"
       - "-c"
       - |
         set -e
-        npm ci
+        echo "Installing dependencies..."
+        npm ci --prefer-offline --no-audit
+        echo "Building main app..."
         npm run build:main
+        echo "Building widget..."
         npm run build:widget
         # Стабильное имя бандла виджета для тега <script src="mortgage-widget.js">
         WIDGET_JS=$$(ls dist/mortgage-widget/browser/main-*.js dist/mortgage-widget/browser/main.js 2>/dev/null | head -n1)
         if [ -n "$$WIDGET_JS" ]; then cp "$$WIDGET_JS" dist/mortgage-widget/browser/mortgage-widget.js; fi
         # Демо-страница встраивания виджета
         cp /app/widget-demo.html dist/mortgage-widget/browser/widget-demo.html 2>/dev/null || true
-        echo "Frontend build complete."
+        echo "Build complete!"
     networks: [mortgage_net]
 
   # --------- Nginx (reverse proxy + статика SPA + виджет + CORS) ---------
@@ -109,3 +115,4 @@ volumes:
   db_data:
   php_cache:
   node_modules:
+  npm_cache:

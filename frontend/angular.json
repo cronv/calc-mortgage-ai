@@ -15,7 +15,7 @@
             "outputPath": "dist/main-app",
             "index": "projects/main-app/src/index.html",
             "browser": "projects/main-app/src/main.ts",
-            "polyfills": [],
+            "polyfills": ["zone.js"],
             "tsConfig": "projects/main-app/tsconfig.app.json",
             "assets": [],
             "styles": [
@@ -90,7 +90,7 @@
             "outputPath": "dist/mortgage-widget",
             "index": "projects/mortgage-widget/src/index.html",
             "browser": "projects/mortgage-widget/src/main.ts",
-            "polyfills": [],
+            "polyfills": ["zone.js"],
             "tsConfig": "projects/mortgage-widget/tsconfig.app.json",
             "assets": [],
             "styles": [],
@@ -109,7 +109,8 @@
               "optimization": {
                 "scripts": true,
                 "styles": {
-                  "minify": true
+                  "minify": true,
+                  "inlineCritical": false
                 },
                 "fonts": {
                   "inline": false

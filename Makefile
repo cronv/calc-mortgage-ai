@@ -44,6 +44,17 @@ build: ## Только пересобрать образы
 front-build: ## Пересобрать только фронтенд
 	$(COMPOSE) --profile build run --rm node
 
+front-dev: ## Запустить frontend dev server
+	@echo "Starting frontend dev server..."
+	$(COMPOSE) --profile build run --rm -p 4200:4200 \
+		-e NODE_OPTIONS="--max-old-space-size=512" \
+		node sh -c "npm start -- --host 0.0.0.0"
+
+front-clean: ## Очистить сборку фронтенда
+	@echo "Cleaning frontend build artifacts..."
+	rm -rf frontend/dist
+	$(COMPOSE) --profile build down -v
+
 bash: ## Шелл в PHP-контейнере
 	$(PHP) sh
 
