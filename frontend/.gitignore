@@ -1,3 +1,7 @@
 .angular
 dist
 node_modules
+
+# Environment files (optional, not tracked)
+src/environments/environment.prod.ts
+projects/main-app/src/app/environments/environment.prod.ts
