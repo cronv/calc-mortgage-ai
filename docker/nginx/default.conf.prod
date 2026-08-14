@@ -78,7 +78,7 @@ server {
 
     # Проверка существования папки поддомена - если нет, редирект на основной домен
     if (!-d /var/www/$subdomain) {
-        return 301 https://ваш-домен.ru$request_uri;
+        return 301 https://$host$request_uri;
     }
 
     # ---------- API → Symfony front controller (PHP-FPM) ----------
@@ -177,5 +177,5 @@ server {
     
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     
-    return 301 https://ваш-домен.ru$request_uri;
+    return 301 https://$host$request_uri;
 }
