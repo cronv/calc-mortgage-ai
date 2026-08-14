@@ -66,6 +66,17 @@ function loanFromPayment(payment: number, months: number, rate: number): number 
 
 const fmt = (n: number): string => Math.round(n).toLocaleString('ru-RU');
 
+/** Формат денег с пробелами-разделителями. */
+function formatMoney(n: number): string {
+  return n > 0 ? Math.round(n).toLocaleString('ru-RU') : '';
+}
+
+/** Очистить строку от всех нецифровых символов и вернуть число. */
+function parseMoney(raw: string): number {
+  const digits = raw.replace(/[^0-9]/g, '');
+  return Number(digits) || 0;
+}
+
 function matchesProgram(o: Offer, key: string): boolean {
   return o.tabs_type === key;
 }
@@ -362,15 +373,15 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
           </div>
           <label class="fld" id="f-cost">
             <span>Стоимость недвижимости</span>
-            <input id="cost" inputmode="numeric" value="4 000 000">
+            <input id="cost" type="text" inputmode="numeric" value="4 000 000">
           </label>
           <label class="fld" id="f-pay" style="display:none">
             <span>Желаемый платёж, ₽/мес</span>
-            <input id="pay" inputmode="numeric" value="30 000">
+            <input id="pay" type="text" inputmode="numeric" value="30 000">
           </label>
           <label class="fld">
             <span>Первоначальный взнос</span>
-            <input id="down" inputmode="numeric" value="2 500 000">
+            <input id="down" type="text" inputmode="numeric" value="2 500 000">
           </label>
           <label class="fld">
             <span>Ставка</span>
@@ -488,13 +499,38 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     fetchTimer = window.setTimeout(() => { void fetchOffers(); }, 350);
   }
 
-  ['cost', 'pay', 'down', 'rate', 'term'].forEach((id) =>
+  // ---- Обработчики для полей с маской денег (cost, pay, down) ----
+  function onMoneyInput(e: Event, id: string): void {
+    const input = e.target as HTMLInputElement;
+    const raw = parseMoney(input.value);
+    // Форматируем с разделителями прямо во время ввода
+    const formatted = formatMoney(raw);
+    const cursorPos = input.selectionStart || 0;
+    const oldLen = input.value.length;
+    
+    input.value = formatted;
+    
+    // Корректируем позицию курсора
+    const newLen = formatted.length;
+    const diff = newLen - oldLen;
+    const newPos = Math.min(Math.max(0, cursorPos + diff), newLen);
+    
+    requestAnimationFrame(() => {
+      input.focus();
+      try {
+        input.setSelectionRange(newPos, newPos);
+      } catch {}
+    });
+    
+    scheduleFetch();
+  }
+
+  ['cost', 'pay', 'down'].forEach((id) => {
+    $(id).addEventListener('input', (e) => onMoneyInput(e, id));
+  });
+
+  ['rate', 'term'].forEach((id) =>
     $(id).addEventListener('input', scheduleFetch));
-  ['cost', 'pay', 'down'].forEach((id) =>
-    $(id).addEventListener('blur', () => {
-      const v = num(id);
-      if (v > 0) ($(id) as HTMLInputElement).value = v.toLocaleString('ru-RU');
-    }));
 
   // ---- Рендер списка ----
   function render(): void {
