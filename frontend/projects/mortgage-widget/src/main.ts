@@ -599,7 +599,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
   function validatePhone(): boolean { return digitsOnly(formData.phone).length >= 10; }
   function validateEmail(): boolean {
     if (formData.email.trim() === '') return true;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // RFC 5322 compliant regex for general email validation
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
     return emailRegex.test(formData.email);
   }
 
@@ -753,7 +754,6 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       if (emailInput) {
         emailInput.addEventListener('input', (e) => {
           formData.email = (e.target as HTMLInputElement).value;
-          formTouched.value = true;
           renderModal();
         });
       }
