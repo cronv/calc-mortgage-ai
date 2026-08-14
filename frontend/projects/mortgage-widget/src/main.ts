@@ -613,8 +613,17 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
   async function submitForm(): Promise<void> {
     formTouched.value = true;
-    if (!validateName() || !validatePhone()) return;
-    if (formData.email !== '' && !validateEmail()) return;
+    
+    // Проверяем валидацию всех полей
+    const isNameValid = validateName();
+    const isPhoneValid = validatePhone();
+    const isEmailValid = formData.email === '' || validateEmail();
+    
+    if (!isNameValid || !isPhoneValid || !isEmailValid) {
+      // Обновляем состояние ошибок без полной перерисовки
+      renderModal();
+      return;
+    }
 
     formState = 'sending';
     renderModal();
@@ -646,7 +655,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       if (!res.ok) throw new Error('bad status ' + res.status);
       formState = 'success';
       startCountdown();
-    } catch {
+    } catch (err) {
+      console.error('Application submission error:', err);
       formState = 'error';
     }
     renderModal();
@@ -688,15 +698,15 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         <p class="form-lead">Оставьте контакты — подберём лучшие предложения банков под ваш расчёт.</p>
         <label class="form-field">
           <span>Имя <i>*</i></span>
-          <input type="text" id="form-name" value="${formData.name.replace(/"/g, '&quot;')}" class="${nameErr}" placeholder="Как к вам обращаться">
+          <input type="text" id="form-name" value="" class="${nameErr}" placeholder="Как к вам обращаться" autocomplete="off">
         </label>
         <label class="form-field">
           <span>Телефон <i>*</i></span>
-          <input type="tel" id="form-phone" value="${formData.phone.replace(/"/g, '&quot;')}" class="${phoneErr}" placeholder="+7 (___) ___-__-__">
+          <input type="tel" id="form-phone" value="" class="${phoneErr}" placeholder="+7 (___) ___-__-__" autocomplete="off">
         </label>
         <label class="form-field">
           <span>Email</span>
-          <input type="email" id="form-email" value="${formData.email.replace(/"/g, '&quot;')}" class="${emailErr}" placeholder="you@example.com">
+          <input type="email" id="form-email" value="" class="${emailErr}" placeholder="you@example.com" autocomplete="off">
         </label>
         ${errorMsg}
         <button type="button" class="form-submit" id="form-submit-btn" ${formState === 'sending' ? 'disabled' : ''}>
@@ -710,21 +720,32 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       const emailInput = shadow.getElementById('form-email') as HTMLInputElement | null;
       const submitBtn = shadow.getElementById('form-submit-btn') as HTMLButtonElement | null;
 
+      // Устанавливаем значения после создания элементов
       if (nameInput) {
+        nameInput.value = formData.name;
         nameInput.addEventListener('input', (e) => {
           formData.name = (e.target as HTMLInputElement).value;
           formTouched.value = true;
-          renderModal();
+          // Обновляем только значение, не перерисовывая весь HTML
+          (e.target as HTMLInputElement).classList.toggle('err', formTouched.value && !validateName());
         });
+        // Фокус на поле имени при открытии
+        setTimeout(() => nameInput.focus(), 50);
       }
       if (phoneInput) {
-        phoneInput.addEventListener('input', onPhoneInput);
+        phoneInput.value = formData.phone;
+        phoneInput.addEventListener('input', (e) => {
+          onPhoneInput(e);
+          const input = e.target as HTMLInputElement;
+          input.classList.toggle('err', formTouched.value && !validatePhone());
+        });
       }
       if (emailInput) {
+        emailInput.value = formData.email;
         emailInput.addEventListener('input', (e) => {
           formData.email = (e.target as HTMLInputElement).value;
           formTouched.value = true;
-          renderModal();
+          (e.target as HTMLInputElement).classList.toggle('err', formTouched.value && formData.email !== '' && !validateEmail());
         });
       }
       if (submitBtn) {
