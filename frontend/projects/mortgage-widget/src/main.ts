@@ -170,6 +170,86 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       .thanks b { display: block; font-size: 17px; margin-bottom: 4px; }
       .thanks span { font-size: 13px; color: #6A6A6A; }
 
+      /* ---- Модальное окно ---- */
+      .modal-backdrop {
+        position: fixed; inset: 0; z-index: 1000; background: rgba(19,25,33,.55);
+        display: none; align-items: flex-start; justify-content: center;
+        padding: 40px 16px; overflow-y: auto; animation: fade .18s ease-out;
+      }
+      .modal-backdrop.open { display: flex; }
+      .modal-dialog {
+        background: #fff; border-radius: 16px; width: 100%; max-width: 720px;
+        box-shadow: 0 24px 64px rgba(0,0,0,.28); animation: rise .22s cubic-bezier(.2,.8,.2,1);
+        margin: auto; max-height: 90vh; overflow-y: auto;
+      }
+      .modal-header {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 20px 24px; border-bottom: 1px solid #DEDEDE; position: sticky; top: 0;
+        background: #fff; border-radius: 16px 16px 0 0; z-index: 1;
+      }
+      .modal-header h2 { font-size: clamp(17px, 4.5vw, 20px); font-weight: 700; line-height: 1.2; margin: 0; }
+      .modal-close {
+        width: 40px; height: 40px; border: 0; border-radius: 9px; background: #F8F8F8;
+        font-size: 24px; line-height: 1; color: #6A6A6A; cursor: pointer; flex: 0 0 auto;
+      }
+      .modal-close:hover { background: #DEDEDE; color: #000; }
+      .modal-body { padding: 24px; }
+      @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+      @keyframes rise { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
+
+      /* ---- Форма заявки ---- */
+      .form-offer-badge {
+        background: #131921; color: #fff; border-radius: 10px; padding: 10px 14px;
+        font-size: 14px; margin-bottom: 14px;
+      }
+      .form-offer-badge b { color: ${cfg.primary}; }
+      .form-lead { color: #6A6A6A; margin-bottom: 16px; font-size: 15px; }
+      .form-snap {
+        display: flex; gap: 10px; background: #F8F8F8; border-radius: 12px;
+        padding: 14px; margin-bottom: 18px; flex-wrap: wrap;
+      }
+      .form-snap > div { flex: 1; min-width: 120px; }
+      .form-snap span { display: block; font-size: 12px; color: #6A6A6A; }
+      .form-snap b { font-size: 16px; font-weight: 600; }
+      .form-field { display: block; margin-bottom: 14px; }
+      .form-field > span { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+      .form-field > span i { color: #E2574C; font-style: normal; }
+      .form-field input {
+        width: 100%; height: 48px; border: 1px solid #DEDEDE; border-radius: 10px;
+        padding: 0 14px; font-size: 16px; font-family: inherit;
+      }
+      .form-field input:focus { outline: 0; border-color: #000; }
+      .form-field input.err { border-color: #E2574C; background: #FEF4F3; }
+      .form-submit {
+        width: 100%; height: 52px; border: 0; border-radius: 12px;
+        background: ${cfg.primary}; font-weight: 700; font-size: 16px; margin-top: 6px;
+        cursor: pointer;
+      }
+      .form-submit:disabled { opacity: .6; cursor: not-allowed; }
+      .form-submit.ghost { background: #F8F8F8; margin-top: 14px; }
+      .form-note { font-size: 12px; color: #6A6A6A; text-align: center; margin-top: 10px; }
+      .form-msg { padding: 11px 14px; border-radius: 10px; font-size: 14px; margin-bottom: 12px; }
+      .form-err-msg { background: #FEF4F3; color: #C0392B; }
+      .form-thanks { text-align: center; padding: 18px 8px; }
+      .form-thanks .ok {
+        width: 64px; height: 64px; border-radius: 50%; background: #E8F5E9;
+        color: #2E7D32; font-size: 34px; display: grid; place-items: center; margin: 0 auto 16px;
+      }
+      .form-thanks h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+      .form-thanks p { color: #6A6A6A; max-width: 380px; margin: 0 auto 6px; }
+      .form-thanks .cd { font-size: 13px; margin-top: 10px; }
+
+      @media (max-width: 420px) {
+        .form-snap { flex-direction: column; gap: 8px; }
+        .form-snap > div { min-width: 0; }
+      }
+      @media (max-width: 680px) {
+        .modal-backdrop { padding: 0; align-items: stretch; }
+        .modal-dialog { max-width: 100%; min-height: 100%; border-radius: 0; margin: 0; }
+        .modal-header { border-radius: 0; padding: 16px; }
+        .modal-body { padding: 16px; }
+      }
+
       /* ========== АДАПТИВНОСТЬ ЧЕРЕЗ @media (ОСНОВНОЙ ПОДХОД) ========== */
       
       /* Планшет и меньше: одна колонка, форма сверху */
@@ -312,6 +392,17 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
           </div>
         </section>
       </div>
+
+      <!-- Модальное окно -->
+      <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal-dialog">
+          <header class="modal-header">
+            <h2>Подробнее</h2>
+            <button type="button" class="modal-close" id="modal-close-btn" aria-label="Закрыть">×</button>
+          </header>
+          <div class="modal-body" id="modal-body-content"></div>
+        </div>
+      </div>
     </div>
   `;
 
@@ -452,38 +543,236 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
   $('morebtn').addEventListener('click', () => { expanded = true; render(); });
 
-  // ---- Заявка ----
-  function onApply(offer: Offer): void {
-    try {
-      window.parent.postMessage({
-        type: 'mortgageWidget:onSuccess',
-        payload: {
-          partner: cfg.partner,
-          bank: offer.bank_name,
-          rate: offer.calculated_rate,
-          payment: Math.round(offer.monthly_payment),
-          cost: Math.round(currentCost()),
-          down: num('down'),
-          termYears: num('term'),
-        },
-      }, '*');
-    } catch { /* родительское окно может быть недоступно */ }
+  // ---- Модальное окно и форма заявки ----
+  let modalOpen = false;
+  let formState: 'idle' | 'sending' | 'success' | 'error' = 'idle';
+  let selectedOffer: Offer | null = null;
+  let countdownValue = 15;
+  let countdownTimer: number | undefined;
 
-    const list = $('list');
-    list.innerHTML = `
-      <div class="card"><div class="thanks">
-        <div class="ic">✓</div>
-        <b>Заявка отправлена!</b>
-        <span>Партнёр свяжется с вами. Вернёмся к предложениям через <i id="cd">10</i> с</span>
-      </div></div>`;
-    let sec = 10;
-    const t = window.setInterval(() => {
-      sec--;
-      const cd = shadow.getElementById('cd');
-      if (cd) cd.textContent = String(sec);
-      if (sec <= 0) { window.clearInterval(t); render(); }
+  const formData = { name: '', phone: '', email: '' };
+  const formTouched = { value: false };
+
+  function openModal(offer: Offer): void {
+    selectedOffer = offer;
+    formState = 'idle';
+    formData.name = '';
+    formData.phone = '';
+    formData.email = '';
+    formTouched.value = false;
+    modalOpen = true;
+    renderModal();
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(): void {
+    modalOpen = false;
+    document.body.style.overflow = '';
+    if (countdownTimer) {
+      clearInterval(countdownTimer);
+      countdownTimer = undefined;
+    }
+    renderModal();
+  }
+
+  function startCountdown(): void {
+    countdownValue = 15;
+    countdownTimer = window.setInterval(() => {
+      countdownValue--;
+      const cdEl = shadow.getElementById('form-cd');
+      if (cdEl) cdEl.textContent = String(countdownValue);
+      if (countdownValue <= 0) {
+        clearInterval(countdownTimer!);
+        countdownTimer = undefined;
+        closeModal();
+      }
     }, 1000);
   }
+
+  function validateName(): boolean { return formData.name.trim().length >= 2; }
+  function digitsOnly(s: string): string { return s.replace(/\D+/g, ''); }
+  function validatePhone(): boolean { return digitsOnly(formData.phone).length >= 10; }
+  function validateEmail(): boolean {
+    if (formData.email.trim() === '') return true;
+    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email);
+  }
+
+  function onPhoneInput(e: Event): void {
+    let d = digitsOnly((e.target as HTMLInputElement).value);
+    if (d.startsWith('8')) d = '7' + d.slice(1);
+    if (!d.startsWith('7')) d = '7' + d;
+    d = d.slice(0, 11);
+    let out = '+7';
+    if (d.length > 1) out += ' (' + d.slice(1, 4);
+    if (d.length >= 4) out += ') ' + d.slice(4, 7);
+    if (d.length >= 7) out += '-' + d.slice(7, 9);
+    if (d.length >= 9) out += '-' + d.slice(9, 11);
+    formData.phone = out;
+    renderModal();
+  }
+
+  async function submitForm(): Promise<void> {
+    formTouched.value = true;
+    if (!validateName() || !validatePhone()) return;
+    if (formData.email !== '' && !validateEmail()) return;
+
+    formState = 'sending';
+    renderModal();
+
+    const payload = {
+      name: formData.name.trim(),
+      phone: digitsOnly(formData.phone),
+      email: formData.email.trim() || null,
+      offer: selectedOffer ? {
+        bank: selectedOffer.bank_name,
+        program: selectedOffer.program_name,
+        rate: selectedOffer.calculated_rate,
+      } : null,
+      calculation: {
+        cost: Math.round(currentCost()),
+        down: num('down'),
+        termMonths: num('term') * 12,
+        rate: num('rate'),
+        monthlyPayment: selectedOffer ? Math.round(selectedOffer.monthly_payment) : 0,
+      },
+    };
+
+    try {
+      const res = await fetch(`${cfg.apiBase}/api/v1/application`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('bad status ' + res.status);
+      formState = 'success';
+      startCountdown();
+    } catch {
+      formState = 'error';
+    }
+    renderModal();
+  }
+
+  function renderModal(): void {
+    let modalEl = shadow.getElementById('modal-backdrop');
+    if (!modalEl) return;
+
+    modalEl.classList.toggle('open', modalOpen);
+
+    const modalBody = shadow.getElementById('modal-body-content');
+    if (!modalBody) return;
+
+    if (formState !== 'success') {
+      const offerBadge = selectedOffer
+        ? `<div class="form-offer-badge"><b>${selectedOffer.bank_name}</b> · ${selectedOffer.program_name} · от ${selectedOffer.calculated_rate}%</div>`
+        : '';
+
+      const snapHtml = selectedOffer
+        ? `<div class="form-snap">
+            <div><span>Платёж</span><b>${fmt(selectedOffer.monthly_payment)} ₽/мес</b></div>
+            <div><span>Сумма кредита</span><b>${fmt(currentCost() - num('down'))} ₽</b></div>
+            <div><span>Ставка</span><b>${selectedOffer.calculated_rate}%</b></div>
+          </div>`
+        : '';
+
+      const errorMsg = formState === 'error'
+        ? `<div class="form-msg form-err-msg">Не удалось отправить заявку. Попробуйте ещё раз.</div>`
+        : '';
+
+      const nameErr = formTouched.value && !validateName() ? ' err' : '';
+      const phoneErr = formTouched.value && !validatePhone() ? ' err' : '';
+      const emailErr = formTouched.value && formData.email !== '' && !validateEmail() ? ' err' : '';
+
+      modalBody.innerHTML = `
+        ${offerBadge}
+        ${snapHtml}
+        <p class="form-lead">Оставьте контакты — подберём лучшие предложения банков под ваш расчёт.</p>
+        <label class="form-field">
+          <span>Имя <i>*</i></span>
+          <input type="text" id="form-name" value="${formData.name.replace(/"/g, '&quot;')}" class="${nameErr}" placeholder="Как к вам обращаться">
+        </label>
+        <label class="form-field">
+          <span>Телефон <i>*</i></span>
+          <input type="tel" id="form-phone" value="${formData.phone.replace(/"/g, '&quot;')}" class="${phoneErr}" placeholder="+7 (___) ___-__-__">
+        </label>
+        <label class="form-field">
+          <span>Email</span>
+          <input type="email" id="form-email" value="${formData.email.replace(/"/g, '&quot;')}" class="${emailErr}" placeholder="you@example.com">
+        </label>
+        ${errorMsg}
+        <button type="button" class="form-submit" id="form-submit-btn" ${formState === 'sending' ? 'disabled' : ''}>
+          ${formState === 'sending' ? 'Отправляем…' : 'Получить предложения'}
+        </button>
+        <p class="form-note">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</p>
+      `;
+
+      const nameInput = shadow.getElementById('form-name') as HTMLInputElement | null;
+      const phoneInput = shadow.getElementById('form-phone') as HTMLInputElement | null;
+      const emailInput = shadow.getElementById('form-email') as HTMLInputElement | null;
+      const submitBtn = shadow.getElementById('form-submit-btn') as HTMLButtonElement | null;
+
+      if (nameInput) {
+        nameInput.addEventListener('input', (e) => {
+          formData.name = (e.target as HTMLInputElement).value;
+          formTouched.value = true;
+          renderModal();
+        });
+      }
+      if (phoneInput) {
+        phoneInput.addEventListener('input', onPhoneInput);
+      }
+      if (emailInput) {
+        emailInput.addEventListener('input', (e) => {
+          formData.email = (e.target as HTMLInputElement).value;
+          formTouched.value = true;
+          renderModal();
+        });
+      }
+      if (submitBtn) {
+        submitBtn.addEventListener('click', submitForm);
+      }
+    } else {
+      modalBody.innerHTML = `
+        <div class="form-thanks">
+          <div class="ok">✓</div>
+          <h3>Заявка отправлена!</h3>
+          <p>Менеджер свяжется с вами в ближайшее время и подберёт лучшие условия.</p>
+          <p class="cd">Окно закроется через <b id="form-cd">${countdownValue}</b> с</p>
+          <button type="button" class="form-submit ghost" id="form-close-btn">Закрыть</button>
+        </div>
+      `;
+      const closeBtn = shadow.getElementById('form-close-btn') as HTMLButtonElement | null;
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+      }
+    }
+  }
+
+  function onApply(offer: Offer): void {
+    openModal(offer);
+  }
+
+  // Обработчик закрытия модального окна по крестику
+  const modalCloseBtn = shadow.getElementById('modal-close-btn');
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener('click', closeModal);
+  }
+
+  // Обработчик закрытия модального окна по клику на фон
+  function onModalBackdropClick(e: Event): void {
+    if ((e.target as HTMLElement).classList.contains('modal-backdrop') && modalOpen) {
+      closeModal();
+    }
+  }
+
+  // Обработчик закрытия модального окна по Esc
+  function onEscKey(e: KeyboardEvent): void {
+    if (e.key === 'Escape' && modalOpen) {
+      closeModal();
+    }
+  }
+
+  shadow.addEventListener('click', onModalBackdropClick);
+  document.addEventListener('keydown', onEscKey);
 
   void fetchOffers();
 }

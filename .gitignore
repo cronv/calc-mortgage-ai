@@ -5,13 +5,15 @@ node_modules/
 # Build outputs
 dist/
 build/
-target/
+*.js.map
+*.tsbuildinfo
 
 # Logs and temp files
 *.log
 *.tmp
+*.swp
 
-# Environment variables
+# Environment
 .env
 .env.local
 *.env.*
@@ -25,47 +27,5 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Java
-*.class
-*.jar
-*.war
-
-# C/C++
-*.o
-*.obj
-*.so
-*.a
-*.dll
-*.exe
-
-# Compression
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
-*.zst
-*.lz4
-*.lzh
-*.cab
-*.arj
-*.rpm
-*.deb
-*.Z
-*.lz
-*.lzo
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# Cache
-.mypy_cache/
-.pytest_cache/
-.gradle/
+.Python
 ```
