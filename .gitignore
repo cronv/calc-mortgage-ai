@@ -1,19 +1,28 @@
-```
 # Dependencies
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Logs and temp files
-*.log
-*.tmp
+# Build outputs
+dist/
+build/
+coverage/
 
-# Environment
+# Environment variables
 .env
 .env.local
 .env.*
+!.env.example
 
-# Editors
+# IDE specific
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Logs
+*.log
 
 # Python
 __pycache__/
@@ -24,26 +33,35 @@ __pycache__/
 env/
 venv/
 .venv/
-.ENV
-.python-version
-
-# Build outputs
-dist/
-build/
-*.egg-info/
-.eggs/
-
-# Testing
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
 .coverage
-htmlcov/
-.nyc_output/
-coverage/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/modules/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.jscs.json
+.jshintignore
+.nodemonignore
 .pytest_cache/
 .mypy_cache/
-
-# OS generated files
 .DS_Store
 Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
 
 # Compressed files
 *.zip
@@ -68,4 +86,433 @@ Thumbs.db
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-```
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Debug log
+debug.log
+
+# Production
+/logs
+
+# Testing
+coverage/
+*.gcov
+*.lcov
+*.tfstate
+*.tfstate.backup
+*.jar
+*.war
+*.ear
+*.class
+*.o
+*.a
+*.so
+*.obj
+*.out
+
+# Node
+node/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Bower
+bower_components/
+
+# Grunt
+.grunt
+
+# Gulp
+gulp-cache/
+
+# Webpack
+webpack-stats.json
+
+# Jspm
+jspm_packages/
+
+# Browser sync
+.browser-sync-tunnel/
+bs-config.json
+bs-scripts.js
+
+# ESLint
+.eslintcache
+
+# CodeClimate
+.codeclimate.yml
+
+# Coveralls
+.coveralls.yml
+
+# Sass
+.sass-cache/
+
+# PhantomJS
+phantomjs/
+phantomjs-prebuilt/
+
+# Protractor
+protractor.log
+
+# Nightwatch
+nightwatch.log
+
+# Jest
+jest.config.js
+coverage/
+*.lcov
+
+# Angular
+.angular/
+
+# React
+.next/
+nuxt/
+nuxt.config.js
+
+# Vue
+.vuepress/dist
+.output_static
+
+# Ember
+.ember-cli
+.ember-hbs-cache
+tmp/
+temp/
+
+# Laravel
+vendor/
+composer.phar
+.php_cs
+.php_cs.cache
+
+# Symfony
+app/cache/*
+app/logs/*
+!app/cache/.gitkeep
+!app/logs/.gitkeep
+var/cache/*
+var/logs/*
+!var/cache/.gitkeep
+!var/logs/.gitkeep
+
+# CakePHP
+logs/
+tmp/
+.scrutinizer.yml
+.travis.yml
+
+# Codeception
+tests/_output/
+
+# Lithium
+libraries/*
+models/datasources/cache/*
+models/datasources/session/*
+
+# Magento
+errors/report.php
+var/
+media/
+app/etc/local.xml
+app/etc/config.xml
+app/etc/modules/*.xml
+app/code/local/*/*/*/data/
+app/code/local/*/*/*/sql/
+lib/internal/Magento/
+dev/tests/static/testsuite/Magento/
+dev/tests/unit/testsuite/Magento/
+dev/tests/integration/testsuite/Magento/
+pub/media/.htaccess
+pub/static/.htaccess
+pub/static/adminhtml/.htaccess
+pub/static/frontend/.htaccess
+generated/
+var/view_preprocessed/
+
+# WordPress
+wp-content/cache/
+wp-content/uploads/
+
+# Drupal
+sites/default/files/
+drush-backups/
+*.make
+*.make.yml
+vendor/
+
+# Joomla
+administrator/logs/
+.cache/
+log/
+
+# Ruby/Rails
+*.gem
+*.rbc
+.bundle/
+config.ru
+db/*.sqlite3
+db/*.sqlite3-journal
+public/system/
+vendor/bundle/
+.ruby-version
+.ruby-gemset
+Gemfile.lock
+Guardfile
+Capfile
+.thor
+.svn
+vendor/assets/bower_components
+
+# PHP
+*.php$
+.php_cs
+.php_cs.cache
+.phpunit.result.cache
+.phpstorm.meta.php
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+*.properties
+.DS_Store
+.settings/
+bin/
+gen/
+out/
+target/
+.gradle/
+build/
+tmp/
+!gradle.properties
+gradle-app.setting
+nbproject/
+nb-configuration.xml
+build/
+dist/
+javadoc/
+test-output/
+*.tws
+*.flexProperties
+*.launch
+*.bak
+*.jardesc
+*.classpath
+*.project
+*.properties
+*.springBeans
+*.springBeans.backup
+*.wtpmodules
+*.factories
+*.factories.backup
+*.component
+*.component.backup
+*.ctx
+*.ctx.backup
+*.ds
+*.ds.backup
+*.launch
+*.launch.backup
+*.portlet
+*.portlet.backup
+*.service
+*.service.backup
+*.springbeans
+*.springbeans.backup
+*.tag
+*.tag.backup
+*.xjb
+*.xjb.backup
+*.xml.bak
+*.xml.backup
+*.xml.orig
+*.xml.rej
+*.dbschema
+*.dbschema.backup
+*.launch
+*.launch.backup
+*.application
+*.application.backup
+*.ctx
+*.ctx.backup
+*.factorypath
+*.factorypath.backup
+*.jmx
+*.jmx.backup
+*.launch
+*.launch.backup
+*.prefs
+*.prefs.backup
+*.springBeans
+*.springBeans.backup
+*.tag
+*.tag.backup
+*.xjb
+*.xjb.backup
+*.xml.bak
+*.xml.backup
+*.xml.orig
+*.xml.rej
+*.dbschema
+*.dbschema.backup
+*.launch
+*.launch.backup
+*.application
+*.application.backup
+*.ctx
+*.ctx.backup
+*.factorypath
+*.factorypath.backup
+*.jmx
+*.jmx.backup
+*.launch
+*.launch.backup
+*.prefs
+*.prefs.backup
+*.springBeans
+*.springBeans.backup
+*.tag
+*.tag.backup
+*.xjb
+*.xjb.backup
+*.xml.bak
+*.xml.backup
+*.xml.orig
+*.xml.rej
+*.dbschema
+*.dbschema.backup
+*.launch
+*.launch.backup
+*.application
+*.application.backup
+*.ctx
+*.ctx.backup
+*.factorypath
+*.factorypath.backup
+*.jmx
+*.jmx.backup
+*.launch
+*.launch.backup
+*.prefs
+*.prefs.backup
+*.springBeans
+*.springBeans.backup
+*.tag
+*.tag.backup
+*.xjb
+*.xjb.backup
+*.xml.bak
+*.xml.backup
+*.xml.orig
+*.xml.rej
+*.dbschema
+*.dbschema.backup
+*.launch
+*.launch.backup
+*.application
+*.application.backup
+*.ctx
+*.ctx.backup
+*.factorypath
+*.factorypath.backup
+*.jmx
+*.jmx.backup
+*.launch
+*.launch.backup
+*.prefs
+*.prefs.backup
+*.springBeans
+*.springBeans.backup
+*.tag
+*.tag.backup
+*.xjb
+*.xjb.backup
+*.xml.bak
+*.xml.backup
+*.xml.orig
+*.xml.rej
+*.dbschema
+*.dbschema.backup
+*.launch
+*.launch.backup
+*.application
+*.application.backup
+*.ctx
+*.ctx.backup
+*.factorypath
+*.factorypath.backup
+*.jmx
+*.jmx.backup
+*.launch
+*.launch.backup
+*.prefs
+*.prefs.backup
+*.springBeans
+*.springBeans.backup
+*.tag
+*.tag.backup
+*.xjb
+*.xjb.backup
+*.xml.bak
+*.xml.backup
+*.xml.orig
+*.xml.rej
+*.dbschema
+*.dbschema.backup
+*.launch
+*.launch.backup
+*.application
+*.application.backup
+*.ctx
+*.ctx.backup
+*.factorypath
+*.factorypath.backup
+*.jmx
+*.jmx.backup
+*.launch
+*.launch.backup
+*.prefs
+*.prefs.backup
+*.springBeans
+*.springBeans.backup
+*.tag
+*.tag.backup
+*.xjb
+*.xjb.backup
+*.xml.bak
+*.xml.backup
+*.xml.orig
+*.xml.rej
+*.dbschema
+*.dbschema.backup
+*.launch
+*.launch.backup
+*.application
+*.application.backup
+*.ctx
+*.ctx.backup
+*.factorypath
+*.factorypath.backup
+*.jmx......

@@ -615,7 +615,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     if (d.length >= 7) out += '-' + d.slice(7, 9);
     if (d.length >= 9) out += '-' + d.slice(9, 11);
     formData.phone = out;
-    renderModal();
+    // Не перерисовываем форму при каждом вводе — это вызывает DOMException
+    // Перерисовка будет при потере фокуса или отправке
   }
 
   async function submitForm(): Promise<void> {
@@ -744,16 +745,29 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       if (nameInput) {
         nameInput.addEventListener('input', (e) => {
           formData.name = (e.target as HTMLInputElement).value;
+          // Не перерисовываем форму при каждом вводе — это вызывает DOMException
+          // Перерисовка будет при валидации (blur) или отправке
+        });
+        nameInput.addEventListener('blur', () => {
           formTouched.value = true;
           renderModal();
         });
       }
       if (phoneInput) {
         phoneInput.addEventListener('input', onPhoneInput);
+        phoneInput.addEventListener('blur', () => {
+          formTouched.value = true;
+          renderModal();
+        });
       }
       if (emailInput) {
         emailInput.addEventListener('input', (e) => {
           formData.email = (e.target as HTMLInputElement).value;
+          // Не перерисовываем форму при каждом вводе — это вызывает DOMException
+          // Перерисовка будет при валидации (blur) или отправке
+        });
+        emailInput.addEventListener('blur', () => {
+          formTouched.value = true;
           renderModal();
         });
       }
