@@ -490,11 +490,31 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
   ['cost', 'pay', 'down', 'rate', 'term'].forEach((id) =>
     $(id).addEventListener('input', scheduleFetch));
-  ['cost', 'pay', 'down'].forEach((id) =>
+  ['cost', 'pay', 'down'].forEach((id) => {
     $(id).addEventListener('blur', () => {
       const v = num(id);
       if (v > 0) ($(id) as HTMLInputElement).value = v.toLocaleString('ru-RU');
-    }));
+    });
+    // Маска при вводе: оставляем только цифры и форматируем
+    $(id).addEventListener('input', (e) => {
+      const input = e.target as HTMLInputElement;
+      const raw = input.value.replace(/\D/g, '');
+      const cursorPos = input.selectionStart || 0;
+      const oldLen = input.value.length;
+      if (raw) {
+        input.value = Number(raw).toLocaleString('ru-RU');
+        // Корректируем позицию курсора
+        const newLen = input.value.length;
+        const diff = newLen - oldLen;
+        requestAnimationFrame(() => {
+          input.focus();
+          try {
+            input.setSelectionRange(Math.min(cursorPos + diff, input.value.length), Math.min(cursorPos + diff, input.value.length));
+          } catch {}
+        });
+      }
+    });
+  });
 
   // ---- Рендер списка ----
   function render(): void {
