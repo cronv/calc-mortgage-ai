@@ -488,13 +488,27 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     fetchTimer = window.setTimeout(() => { void fetchOffers(); }, 350);
   }
 
-  ['cost', 'pay', 'down', 'rate', 'term'].forEach((id) =>
-    $(id).addEventListener('input', scheduleFetch));
-  ['cost', 'pay', 'down'].forEach((id) =>
-    $(id).addEventListener('blur', () => {
+  // Маска для денежных полей: оставляем только цифры при вводе
+  ['cost', 'pay', 'down'].forEach((id) => {
+    const input = $(id) as HTMLInputElement;
+    input.addEventListener('input', (e) => {
+      const raw = (e.target as HTMLInputElement).value.replace(/\D/g, '');
+      const cursorPos = input.selectionStart || 0;
+      const oldLen = input.value.length;
+      input.value = raw;
+      // Восстанавливаем позицию курсора с учётом изменения длины
+      const newLen = raw.length;
+      const newPos = Math.min(cursorPos + (newLen - oldLen), newLen);
+      input.setSelectionRange(newPos, newPos);
+      scheduleFetch();
+    });
+    input.addEventListener('blur', () => {
       const v = num(id);
       if (v > 0) ($(id) as HTMLInputElement).value = v.toLocaleString('ru-RU');
-    }));
+    });
+  });
+  ['rate', 'term'].forEach((id) =>
+    $(id).addEventListener('input', scheduleFetch));
 
   // ---- Рендер списка ----
   function render(): void {
