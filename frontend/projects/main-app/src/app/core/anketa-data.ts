@@ -9,6 +9,19 @@ export const PROPERTY_TYPES: readonly string[] = [
   'Строительство дома', 'Участок', 'Коммерческая недвижимость', 'Таунхаус',
 ];
 
+/** Маппинг названий типов недвижимости на ключи PROPERTY_PRESETS для определения ставки. */
+export const PROPERTY_TYPE_TO_KEY: Record<string, string> = {
+  'Вторичка': 'SECONDARY',
+  'Новостройка': 'NEW_BUILDING',
+  'Дом': 'HOUSE',
+  'Апартаменты': 'SECONDARY',
+  'Комната/Доля в квартире': 'SECONDARY',
+  'Строительство дома': 'HOUSE',
+  'Участок': 'HOUSE',
+  'Коммерческая недвижимость': 'SECONDARY',
+  'Таунхаус': 'HOUSE',
+};
+
 export const TERM_UNITS: ReadonlyArray<{ key: 'years' | 'months'; label: string; field: string; suffix: string }> = [
   { key: 'years', label: 'Срок в годах', field: 'Срок в годах', suffix: 'г.' },
   { key: 'months', label: 'Срок в месяцах', field: 'Срок в месяцах', suffix: 'мес.' },
