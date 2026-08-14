@@ -675,6 +675,10 @@ export class ApplicationWizardComponent {
 
   set(key: string, value: unknown): void {
     this.flow.patch({ [key]: value } as never);
+    if (key === 'propertyType') {
+      // Обновляем ставку при изменении типа недвижимости
+      this.flow.updateRateForPropertyType();
+    }
   }
 
   setMoney(key: 'cost' | 'down' | 'income' | 'creditPayments', e: Event): void {

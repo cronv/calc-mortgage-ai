@@ -1,6 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
 import type { BankOffer } from './offers.service';
 import { annuityPayment } from '../core/mortgage-math';
+import { PROPERTY_PRESETS } from '../services/mortgage.service';
+import { PROPERTY_TYPE_TO_KEY } from '../core/anketa-data';
 
 /** Этапы мастера: 5 шагов + авторизация (после шага 1) + финал. */
 export type WizardStage = 's1' | 'auth' | 'code' | 's2' | 's3' | 's4' | 's5' | 'done';
@@ -79,6 +81,14 @@ const EMPTY: AnketaData = {
   education: '', creditPayments: 0, snils: '',
 };
 
+/** Получить ставку по типу недвижимости. Если тип не найден — вернуть defaultRate. */
+function getRateForPropertyType(propertyType: string, defaultRate: number): number {
+  const key = PROPERTY_TYPE_TO_KEY[propertyType];
+  if (!key) return defaultRate;
+  const preset = PROPERTY_PRESETS.find((p) => p.key === key);
+  return preset ? preset.rate : defaultRate;
+}
+
 /**
  * Состояние 5-шаговой анкеты заёмщика: открытие из карточки банка или по ссылке,
  * навигация по шагам с «Назад», авторизация по телефону, сводка для PDF/Word,
@@ -111,6 +121,14 @@ export class ApplicationFlowService {
   readonly loan = computed(() => Math.max(0, this.data().cost - this.data().down));
   readonly payment = computed(() => annuityPayment(this.loan(), Math.max(1, this.months()), this.rate()));
 
+  /** Обновление ставки при изменении типа недвижимости. */
+  updateRateForPropertyType(): void {
+    const d = this.data();
+    if (!d.propertyType || !this.offer()) return;
+    const newRate = getRateForPropertyType(d.propertyType, this.offer()!.calculated_rate);
+    this.rate.set(newRate);
+  }
+
   patch(part: Partial<AnketaData>): void {
     this.data.update((d) => ({ ...d, ...part }));
   }
@@ -125,6 +143,7 @@ export class ApplicationFlowService {
       termValue: prefill.years, termUnit: 'years',
       propertyType: prefill.propertyLabel,
     });
+    this.updateRateForPropertyType();
     this.stage.set('s1');
     this.opened.set(true);
     this.syncUrl();
@@ -153,6 +172,7 @@ export class ApplicationFlowService {
       termUnit: q.get('unit') === 'months' ? 'months' : 'years',
       propertyType: q.get('pt') ?? '',
     });
+    this.updateRateForPropertyType();
     this.stage.set('s1');
     this.opened.set(true);
   }
