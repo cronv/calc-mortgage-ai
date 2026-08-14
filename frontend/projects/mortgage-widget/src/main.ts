@@ -601,7 +601,19 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     if (formData.email.trim() === '') return true;
     // RFC 5322 compliant regex for general email validation
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-    return emailRegex.test(formData.email);
+    return emailRegex.test(formData.email.trim());
+  }
+  /** Проверка email на явную некорректность (для показа ошибки во время ввода) */
+  function isEmailObviouslyInvalid(email: string): boolean {
+    const trimmed = email.trim();
+    if (trimmed === '') return false; // пустое поле — не ошибка
+    // Очевидно некорректный email, если нет @ или нет домена после @
+    const parts = trimmed.split('@');
+    if (parts.length !== 2) return true;
+    const [local, domain] = parts;
+    if (!local || !domain) return true;
+    if (!domain.includes('.')) return true;
+    return false;
   }
 
   function onPhoneInput(e: Event): void {
@@ -696,7 +708,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
       const nameErr = formTouched.value && !validateName() ? ' err' : '';
       const phoneErr = formTouched.value && !validatePhone() ? ' err' : '';
-      const emailErr = formTouched.value && formData.email.trim() !== '' && !validateEmail() ? ' err' : '';
+      const emailErr = formTouched.value && isEmailObviouslyInvalid(formData.email) ? ' err' : '';
 
       // Сохраняем фокус перед рендером
       const activeEl = shadow.activeElement as HTMLElement | null;
