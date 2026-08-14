@@ -81,42 +81,49 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
       .pw {
         font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
-        color: #000; width: 100%;
+        color: #000; width: 100%; max-width: 100%; overflow-x: hidden; position: relative;
       }
-      h2 { font-size: clamp(20px, 5cqi, 28px); font-weight: 700; margin: 0 0 16px; }
+      h2 { font-size: clamp(18px, 5cqi, 24px); font-weight: 700; margin: 0 0 12px; line-height: 1.3; }
 
-      .cols { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 22px; align-items: start; }
+      .cols { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 16px; align-items: start; }
 
       /* ---- Левая панель ---- */
-      .modes { display: flex; gap: 8px; margin-bottom: 12px; }
+      aside { min-width: 0; max-width: 100%; }
+      .modes { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
       .modes button {
-        flex: 1; border: 1px solid #000; background: #fff; border-radius: 22px;
+        flex: 1 1 auto; border: 1px solid #000; background: #fff; border-radius: 22px;
         padding: 10px 8px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap;
+        min-width: 0;
       }
       .modes button.on { background: ${cfg.primary}; border-color: ${cfg.primary}; font-weight: 600; }
 
       .fld {
         display: block; background: #fff; border: 1px solid #DEDEDE; border-radius: 14px;
-        padding: 8px 14px 10px; margin-bottom: 10px; min-width: 0;
+        padding: 8px 14px 10px; margin-bottom: 10px; min-width: 0; max-width: 100%;
       }
       .fld:focus-within { border-color: #000; }
-      .fld > span { display: block; font-size: 12px; color: #6A6A6A; margin-bottom: 2px; }
+      .fld > span { display: block; font-size: 12px; color: #6A6A6A; margin-bottom: 2px; line-height: 1.3; }
       .fld input {
         width: 100%; border: 0; padding: 0; font-size: 16px; font-weight: 600;
         background: transparent; -webkit-appearance: none; appearance: none;
+        min-width: 0; max-width: 100%;
       }
       .fld input:focus { outline: 0; }
-      .tin { display: flex; align-items: center; gap: 8px; }
-      .tin input { flex: 1; }
-      .tin em { font-style: normal; font-size: 14px; color: #6A6A6A; border-left: 1px solid #DEDEDE; padding-left: 10px; }
+      .tin { display: flex; align-items: center; gap: 8px; min-width: 0; }
+      .tin input { flex: 1 1 0; min-width: 0; }
+      .tin em { font-style: normal; font-size: 14px; color: #6A6A6A; border-left: 1px solid #DEDEDE; padding-left: 10px; white-space: nowrap; }
       .note { font-size: 12px; color: #6A6A6A; line-height: 1.5; margin-top: 12px; }
 
       /* ---- Правая колонка ---- */
+      section { min-width: 0; max-width: 100%; overflow-x: hidden; }
       .ptabs {
         display: flex; gap: 4px; background: #131921; border-radius: 16px; padding: 8px;
-        overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-bottom: 14px;
+        overflow-x: auto; scrollbar-width: thin; -webkit-overflow-scrolling: touch; margin-bottom: 14px;
+        -ms-overflow-style: none;
       }
-      .ptabs::-webkit-scrollbar { display: none; }
+      .ptabs::-webkit-scrollbar { width: 4px; height: 4px; }
+      .ptabs::-webkit-scrollbar-track { background: transparent; }
+      .ptabs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
       .ptabs button {
         border: 0; background: transparent; color: #fff; border-radius: 10px;
         padding: 9px 14px; font-size: 13px; font-weight: 500; cursor: pointer;
@@ -126,25 +133,25 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
       .card {
         background: #fff; border: 1px solid #DEDEDE; border-radius: 14px;
-        padding: 16px 18px; margin-bottom: 12px;
+        padding: 14px 16px; margin-bottom: 12px; max-width: 100%; overflow: hidden;
       }
-      .chead { display: flex; gap: 12px; align-items: flex-start; }
+      .chead { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
       .logo {
         width: 38px; height: 38px; border-radius: 10px; background: #1B75BB; color: #fff;
         font-weight: 700; font-size: 16px; display: flex; align-items: center;
-        justify-content: center; flex: 0 0 auto;
+        justify-content: center; flex: 0 0 38px; overflow: hidden;
       }
-      .bname { min-width: 0; flex: 1; }
-      .bname b { display: block; font-size: 15px; font-weight: 600; }
-      .bname span { font-size: 12px; color: #6A6A6A; }
-      .cpay { text-align: right; flex: 0 0 auto; }
-      .cpay b { display: block; font-size: clamp(17px, 4cqi, 20px); font-weight: 700; white-space: nowrap; }
-      .cpay span { font-size: 12px; color: #6A6A6A; }
+      .bname { min-width: 0; flex: 1 1 auto; max-width: calc(100% - 50px); word-wrap: break-word; }
+      .bname b { display: block; font-size: 15px; font-weight: 600; line-height: 1.3; overflow-wrap: break-word; }
+      .bname span { font-size: 12px; color: #6A6A6A; line-height: 1.3; }
+      .cpay { text-align: right; flex: 0 0 auto; min-width: 120px; }
+      .cpay b { display: block; font-size: clamp(15px, 4cqi, 18px); font-weight: 700; white-space: nowrap; line-height: 1.3; }
+      .cpay span { font-size: 12px; color: #6A6A6A; white-space: nowrap; }
       .cfoot {
         display: flex; justify-content: space-between; align-items: center; gap: 12px;
         margin-top: 12px; padding-top: 12px; border-top: 1px solid #EEE; flex-wrap: wrap;
       }
-      .cfoot .psk { font-size: 13px; color: #6A6A6A; }
+      .cfoot .psk { font-size: 13px; color: #6A6A6A; line-height: 1.4; flex: 1 1 auto; min-width: 0; }
       .apply {
         border: 1px solid #000; background: #fff; border-radius: 22px; padding: 10px 18px;
         font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap;
@@ -153,7 +160,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
       .more { text-align: center; }
       .more button { border: 0; background: transparent; color: #1B75BB; font-size: 14px; cursor: pointer; padding: 8px 12px; }
-      .empty { background: #F8F8F8; border-radius: 12px; padding: 20px; text-align: center; color: #6A6A6A; font-size: 14px; }
+      .empty { background: #F8F8F8; border-radius: 12px; padding: 20px; text-align: center; color: #6A6A6A; font-size: 14px; line-height: 1.5; }
 
       .thanks { text-align: center; padding: 22px 8px; }
       .thanks .ic {
@@ -163,7 +170,92 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       .thanks b { display: block; font-size: 17px; margin-bottom: 4px; }
       .thanks span { font-size: 13px; color: #6A6A6A; }
 
-      /* ---- Адаптив по ширине контейнера ---- */
+      /* ========== АДАПТИВНОСТЬ ЧЕРЕЗ @media (ОСНОВНОЙ ПОДХОД) ========== */
+      
+      /* Планшет и меньше: одна колонка, форма сверху */
+      @media (max-width: 900px) {
+        .cols { grid-template-columns: 1fr; }
+        aside { order: -1; position: sticky; top: 0; background: #fff; z-index: 10; padding-bottom: 12px; border-bottom: 1px solid #EEE; }
+      }
+
+      /* Мобильные ≤768px */
+      @media (max-width: 768px) {
+        .pw { padding: 0 8px; }
+        .cols { gap: 12px; }
+        .modes { gap: 6px; }
+        .modes button { padding: 8px 6px; font-size: 12px; }
+        .fld { padding: 6px 12px 8px; }
+        .fld input { font-size: 15px; }
+        .ptabs { padding: 6px; gap: 3px; }
+        .ptabs button { padding: 8px 12px; font-size: 12px; }
+        .card { padding: 12px 14px; }
+      }
+
+      /* Мобильные ≤620px */
+      @media (max-width: 620px) {
+        .pw { padding: 0 4px; }
+        h2 { font-size: 18px; margin-bottom: 10px; }
+        .chead { gap: 10px; }
+        .logo { width: 36px; height: 36px; flex: 0 0 36px; font-size: 14px; }
+        .bname { max-width: calc(100% - 46px); }
+        .bname b { font-size: 14px; }
+        .bname span { font-size: 11px; }
+        .cpay { min-width: 100px; text-align: left; }
+        .cpay b { font-size: 16px; }
+        .cfoot { flex-direction: column; align-items: stretch; gap: 10px; }
+        .cfoot .psk { text-align: center; }
+        .apply { width: 100%; text-align: center; padding: 12px; }
+      }
+
+      /* Малые мобильные ≤480px */
+      @media (max-width: 480px) {
+        .pw { padding: 0 2px; }
+        .modes { flex-direction: column; gap: 6px; }
+        .modes button { width: 100%; text-align: center; }
+        .fld { margin-bottom: 8px; }
+        .fld input { font-size: 14px; }
+        .tin em { font-size: 13px; padding-left: 8px; }
+        .ptabs { margin-bottom: 10px; }
+        .ptabs button { padding: 7px 10px; font-size: 11px; border-radius: 8px; }
+        .card { padding: 10px 12px; margin-bottom: 10px; border-radius: 12px; }
+        .chead { flex-wrap: wrap; }
+        .cpay { width: 100%; padding-left: 46px; margin-top: -26px; }
+        .cfoot .psk { font-size: 12px; }
+        .apply { padding: 11px; font-size: 13px; }
+        .note { font-size: 11px; }
+      }
+
+      /* Очень малые экраны ≤375px (минимальная ширина) */
+      @media (max-width: 375px) {
+        .pw { padding: 0; }
+        h2 { font-size: 16px; margin-bottom: 8px; }
+        .fld { padding: 5px 10px 7px; border-radius: 12px; }
+        .fld > span { font-size: 11px; }
+        .fld input { font-size: 13px; }
+        .tin em { font-size: 12px; padding-left: 6px; }
+        .logo { width: 32px; height: 32px; flex: 0 0 32px; font-size: 13px; }
+        .bname { max-width: calc(100% - 42px); }
+        .bname b { font-size: 13px; }
+        .bname span { font-size: 10px; }
+        .cpay { padding-left: 42px; }
+        .cpay b { font-size: 14px; }
+        .cpay span { font-size: 11px; }
+        .cfoot .psk { font-size: 11px; }
+        .apply { padding: 10px; font-size: 12px; border-radius: 20px; }
+        .ptabs button { padding: 6px 8px; font-size: 10px; }
+      }
+
+      /* Фолбэк для browser без container queries */
+      @supports not (container-type: inline-size) {
+        @media (max-width: 800px) { .cols { grid-template-columns: 1fr; } }
+        @media (max-width: 430px) {
+          .chead { flex-wrap: wrap; }
+          .cfoot { flex-direction: column; align-items: stretch; }
+          .apply { width: 100%; }
+        }
+      }
+
+      /* Container Queries как дополнение для гибкости внутри контейнеров */
       @container (max-width: 760px) {
         .cols { grid-template-columns: 1fr; }
       }
@@ -172,15 +264,6 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         .cpay { text-align: left; width: 100%; padding-left: 50px; }
         .cfoot { flex-direction: column; align-items: stretch; }
         .apply { width: 100%; text-align: center; padding: 12px; }
-      }
-      /* Фолбэк для браузеров без container queries */
-      @supports not (container-type: inline-size) {
-        @media (max-width: 800px) { .cols { grid-template-columns: 1fr; } }
-        @media (max-width: 430px) {
-          .chead { flex-wrap: wrap; }
-          .cfoot { flex-direction: column; align-items: stretch; }
-          .apply { width: 100%; }
-        }
       }
     </style>
 
