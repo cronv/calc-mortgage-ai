@@ -598,9 +598,9 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
   function digitsOnly(s: string): string { return s.replace(/\D+/g, ''); }
   function validatePhone(): boolean { return digitsOnly(formData.phone).length >= 10; }
   function validateEmail(): boolean {
-    if (formData.email.trim() === '') return true;
-    // RFC 5322 compliant regex for general email validation
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    if (formData.email.trim() === '') return false;
+    // Email must contain @ and . characters
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(formData.email);
   }
 
@@ -624,7 +624,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     // Проверяем валидность всех полей
     const isNameValid = validateName();
     const isPhoneValid = validatePhone();
-    const isEmailValid = formData.email.trim() === '' || validateEmail();
+    const isEmailValid = validateEmail();
     
     if (!isNameValid || !isPhoneValid || !isEmailValid) {
       renderModal();
@@ -696,7 +696,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
       const nameErr = formTouched.value && !validateName() ? ' err' : '';
       const phoneErr = formTouched.value && !validatePhone() ? ' err' : '';
-      const emailErr = formTouched.value && formData.email.trim() !== '' && !validateEmail() ? ' err' : '';
+      const emailErr = formTouched.value && !validateEmail() ? ' err' : '';
 
       // Сохраняем фокус перед рендером
       const activeEl = shadow.activeElement as HTMLElement | null;
