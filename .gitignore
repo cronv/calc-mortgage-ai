@@ -1,18 +1,15 @@
+```
 # Dependencies
 node_modules/
 
-# Build outputs
-dist/
-build/
-target/
-
-# Logs
+# Logs and temp files
 *.log
+*.tmp
 
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
 # Editors
 .vscode/
@@ -24,28 +21,29 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
+env/
 venv/
 .venv/
-.env/
+.ENV
+.python-version
 
-# Temporary files
-*.tmp
-*.swp
-*.swo
+# Build outputs
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Testing
+.coverage
+htmlcov/
+.nyc_output/
+coverage/
+.pytest_cache/
+.mypy_cache/
 
 # OS generated files
 .DS_Store
 Thumbs.db
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# MyPy cache
-.mypy_cache/
-# Pytest cache
-.pytest_cache/
 
 # Compressed files
 *.zip
@@ -70,3 +68,4 @@ htmlcov/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
+```
