@@ -362,15 +362,15 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
           </div>
           <label class="fld" id="f-cost">
             <span>Стоимость недвижимости</span>
-            <input id="cost" inputmode="numeric" value="4 000 000">
+            <input id="cost" type="text" inputmode="numeric" value="4 000 000">
           </label>
           <label class="fld" id="f-pay" style="display:none">
             <span>Желаемый платёж, ₽/мес</span>
-            <input id="pay" inputmode="numeric" value="30 000">
+            <input id="pay" type="text" inputmode="numeric" value="30 000">
           </label>
           <label class="fld">
             <span>Первоначальный взнос</span>
-            <input id="down" inputmode="numeric" value="2 500 000">
+            <input id="down" type="text" inputmode="numeric" value="2 500 000">
           </label>
           <label class="fld">
             <span>Ставка</span>
@@ -409,6 +409,35 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
   const $ = (id: string): HTMLElement => shadow.getElementById(id)!;
   const num = (id: string): number =>
     parseFloat((($(id) as HTMLInputElement).value || '').replace(/\s/g, '').replace(',', '.')) || 0;
+
+  /** Формат денег с пробелами-разделителями. */
+  const fmtMoney = (v: number): string => v > 0 ? Math.round(v).toLocaleString('ru-RU') : '';
+
+  /** Обработчик ввода для денежных полей с маской. */
+  function onMoneyInput(e: Event, id: string): void {
+    const input = e.target as HTMLInputElement;
+    const oldCursorPos = input.selectionStart || 0;
+    const oldValue = input.value;
+    
+    // Удаляем все нецифровые символы
+    const raw = oldValue.replace(/\D+/g, '');
+    const value = Number(raw) || 0;
+    const newValue = fmtMoney(value);
+    
+    // Обновляем значение
+    input.value = newValue;
+    
+    // Вычисляем новую позицию курсора
+    const diff = newValue.length - oldValue.length;
+    const newCursorPos = Math.min(oldCursorPos + diff, newValue.length);
+    
+    requestAnimationFrame(() => {
+      input.focus();
+      try {
+        input.setSelectionRange(newCursorPos, newCursorPos);
+      } catch {}
+    });
+  }
 
   let mode: 'by_cost' | 'by_payment' = 'by_cost';
   let activeProgram = 'STANDARD';
@@ -488,13 +517,22 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     fetchTimer = window.setTimeout(() => { void fetchOffers(); }, 350);
   }
 
-  ['cost', 'pay', 'down', 'rate', 'term'].forEach((id) =>
-    $(id).addEventListener('input', scheduleFetch));
-  ['cost', 'pay', 'down'].forEach((id) =>
-    $(id).addEventListener('blur', () => {
+  // ---- Обработчики для денежных полей (cost, pay, down) с маской ----
+  ['cost', 'pay', 'down'].forEach((id) => {
+    const el = $(id) as HTMLInputElement;
+    el.addEventListener('input', (e) => {
+      onMoneyInput(e, id);
+      scheduleFetch();
+    });
+    el.addEventListener('blur', () => {
       const v = num(id);
-      if (v > 0) ($(id) as HTMLInputElement).value = v.toLocaleString('ru-RU');
-    }));
+      if (v > 0) el.value = fmtMoney(v);
+    });
+  });
+
+  // ---- Обработчики для остальных полей (rate, term) ----
+  ['rate', 'term'].forEach((id) =>
+    $(id).addEventListener('input', scheduleFetch));
 
   // ---- Рендер списка ----
   function render(): void {
