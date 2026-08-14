@@ -599,8 +599,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
   function validatePhone(): boolean { return digitsOnly(formData.phone).length >= 10; }
   function validateEmail(): boolean {
     if (formData.email.trim() === '') return true;
-    // RFC 5322 compliant regex for general email validation
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    // Исправленный regex для валидации email с поддержкой коротких доменов (2 символа)
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9][a-zA-Z0-9-]*(?:\.[a-zA-Z0-9][a-zA-Z0-9-]*)*\.[a-zA-Z]{2,}$/;
     return emailRegex.test(formData.email);
   }
 
@@ -615,6 +615,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     if (d.length >= 7) out += '-' + d.slice(7, 9);
     if (d.length >= 9) out += '-' + d.slice(9, 11);
     formData.phone = out;
+    formTouched.value = true;
     renderModal();
   }
 
@@ -696,7 +697,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
       const nameErr = formTouched.value && !validateName() ? ' err' : '';
       const phoneErr = formTouched.value && !validatePhone() ? ' err' : '';
-      const emailErr = formTouched.value && formData.email.trim() !== '' && !validateEmail() ? ' err' : '';
+      const emailErr = formData.email.trim() !== '' && !validateEmail() ? ' err' : '';
 
       // Сохраняем фокус перед рендером
       const activeEl = shadow.activeElement as HTMLElement | null;
@@ -754,6 +755,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       if (emailInput) {
         emailInput.addEventListener('input', (e) => {
           formData.email = (e.target as HTMLInputElement).value;
+          formTouched.value = true;
           renderModal();
         });
       }
