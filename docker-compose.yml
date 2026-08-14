@@ -84,7 +84,7 @@ services:
 
   # --------- Nginx (reverse proxy + статика SPA + виджет + CORS) ---------
   nginx:
-    image: nginx:1.27-alpine
+    image: nginx:latest
     container_name: mortgage_nginx
     depends_on:
       php:

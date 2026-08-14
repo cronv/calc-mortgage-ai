@@ -1,11 +1,9 @@
 # CORS: Origin партнёра отражается обратно. В проде заменить на белый список доменов.
-map $http_origin $cors_origin {
-    default "";
-    "~.*"   $http_origin;
-}
+# map $http_origin $cors_origin { ... } - перенесён в nginx.conf
 
 upstream php_fpm {
     server php:9000;
+    keepalive 32;
 }
 
 server {
@@ -13,6 +11,10 @@ server {
     server_name _;
     root /var/www/main;
     index index.html;
+    
+    # Security headers для локальной разработки (опционально)
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
 
     # ---------- API → Symfony front controller (PHP-FPM) ----------
     location /api/ {
@@ -22,9 +24,11 @@ server {
             add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With" always;
             add_header Access-Control-Max-Age 3600 always;
             add_header Content-Length 0;
+            add_header X-Content-Type-Options "nosniff" always;
             return 204;
         }
         add_header Access-Control-Allow-Origin $cors_origin always;
+        add_header X-Content-Type-Options "nosniff" always;
 
         fastcgi_pass php_fpm;
         include fastcgi_params;
@@ -32,6 +36,9 @@ server {
         fastcgi_param DOCUMENT_ROOT   /var/www/html/public;
         fastcgi_param SCRIPT_NAME     /index.php;
         fastcgi_param REQUEST_URI     $request_uri;
+        
+        # Скрытие версии PHP
+        fastcgi_hide_header X-Powered-By;
     }
 
     location ~ ^/index\.php(/|$) {
@@ -40,6 +47,10 @@ server {
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME /var/www/html/public/index.php;
         fastcgi_param DOCUMENT_ROOT   /var/www/html/public;
+        
+        # Скрытие версии PHP
+        fastcgi_hide_header X-Powered-By;
+        
         internal;
     }
 
@@ -47,6 +58,8 @@ server {
     location ~* ^/widget/(.*\.js)$ {
         alias /var/www/widget/$1;
         add_header Content-Type application/javascript;
+        add_header Access-Control-Allow-Origin "*" always;
+        add_header Cache-Control "public, max-age=3600";
     }
 
     # Файлы widget
@@ -61,6 +74,7 @@ server {
     location ~* \.(?:js|css|woff2|svg|png|jpg|jpeg|gif|ico)$ {
         expires 30d;
         add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff" always;
         try_files $uri =404;
     }
 
