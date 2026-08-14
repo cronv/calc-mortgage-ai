@@ -85,33 +85,48 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     <style>
       :host { all: initial; display: block; container-type: inline-size; }
       *, *::before, *::after { box-sizing: border-box; }
-      button, input { font-family: inherit; }
+      button, input { font-family: inherit; font-size: inherit; margin: 0; padding: 0; }
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type=number] {
+        -moz-appearance: textfield;
+      }
 
       .pw {
-        font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
-        color: #000; width: 100%;
+        font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #000; width: 100%; line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-      h2 { font-size: clamp(20px, 5cqi, 28px); font-weight: 700; margin: 0 0 16px; }
+      h2 { font-size: 28px; font-weight: 700; margin: 0 0 16px; line-height: 1.2; }
 
       .cols { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 22px; align-items: start; }
 
       /* ---- Левая панель ---- */
-      .modes { display: flex; gap: 8px; margin-bottom: 12px; }
+      .modes { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
       .modes button {
-        flex: 1; border: 1px solid #000; background: #fff; border-radius: 22px;
+        flex: 1 1 auto; border: 1px solid #000; background: #fff; border-radius: 22px;
         padding: 10px 8px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap;
+        min-width: 120px; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
       }
-      .modes button.on { background: ${cfg.primary}; border-color: ${cfg.primary}; font-weight: 600; }
+      .modes button:hover { opacity: 0.85; }
+      .modes button.on { background: ${cfg.primary}; border-color: ${cfg.primary}; font-weight: 600; color: #000; }
+      .modes button:focus-visible { outline: 2px solid ${cfg.primary}; outline-offset: 2px; }
 
       .fld {
         display: block; background: #fff; border: 1px solid #DEDEDE; border-radius: 14px;
         padding: 8px 14px 10px; margin-bottom: 10px; min-width: 0;
+        transition: border-color 0.2s ease;
       }
       .fld:focus-within { border-color: #000; }
-      .fld > span { display: block; font-size: 12px; color: #6A6A6A; margin-bottom: 2px; }
+      .fld > span { display: block; font-size: 12px; color: #6A6A6A; margin-bottom: 2px; line-height: 1.4; }
       .fld input {
         width: 100%; border: 0; padding: 0; font-size: 16px; font-weight: 600;
         background: transparent; -webkit-appearance: none; appearance: none;
+        color: #000;
       }
       .fld input:focus { outline: 0; }
       .tin { display: flex; align-items: center; gap: 8px; }
@@ -122,20 +137,27 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       /* ---- Правая колонка ---- */
       .ptabs {
         display: flex; gap: 4px; background: #131921; border-radius: 16px; padding: 8px;
-        overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-bottom: 14px;
+        overflow-x: auto; scrollbar-width: thin; -webkit-overflow-scrolling: touch; margin-bottom: 14px;
+        -ms-overflow-style: none;
       }
-      .ptabs::-webkit-scrollbar { display: none; }
+      .ptabs::-webkit-scrollbar { height: 4px; }
+      .ptabs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
+      .ptabs::-ms-scrollbar { display: none; }
       .ptabs button {
         border: 0; background: transparent; color: #fff; border-radius: 10px;
         padding: 9px 14px; font-size: 13px; font-weight: 500; cursor: pointer;
-        white-space: nowrap; flex: 0 0 auto;
+        white-space: nowrap; flex: 0 0 auto; transition: background-color 0.2s ease, color 0.2s ease;
       }
+      .ptabs button:hover { opacity: 0.85; }
       .ptabs button.on { background: ${cfg.primary}; color: #000; font-weight: 600; }
+      .ptabs button:focus-visible { outline: 2px solid ${cfg.primary}; outline-offset: 1px; }
 
       .card {
         background: #fff; border: 1px solid #DEDEDE; border-radius: 14px;
         padding: 16px 18px; margin-bottom: 12px;
+        transition: box-shadow 0.2s ease;
       }
+      .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
       .chead { display: flex; gap: 12px; align-items: flex-start; }
       .logo {
         width: 38px; height: 38px; border-radius: 10px; background: #1B75BB; color: #fff;
@@ -143,25 +165,29 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         justify-content: center; flex: 0 0 auto;
       }
       .bname { min-width: 0; flex: 1; }
-      .bname b { display: block; font-size: 15px; font-weight: 600; }
+      .bname b { display: block; font-size: 15px; font-weight: 600; line-height: 1.3; word-break: break-word; }
       .bname span { font-size: 12px; color: #6A6A6A; }
-      .cpay { text-align: right; flex: 0 0 auto; }
-      .cpay b { display: block; font-size: clamp(17px, 4cqi, 20px); font-weight: 700; white-space: nowrap; }
+      .cpay { text-align: right; flex: 0 0 auto; min-width: 100px; }
+      .cpay b { display: block; font-size: 20px; font-weight: 700; white-space: nowrap; line-height: 1.2; }
       .cpay span { font-size: 12px; color: #6A6A6A; }
       .cfoot {
         display: flex; justify-content: space-between; align-items: center; gap: 12px;
         margin-top: 12px; padding-top: 12px; border-top: 1px solid #EEE; flex-wrap: wrap;
       }
-      .cfoot .psk { font-size: 13px; color: #6A6A6A; }
+      .cfoot .psk { font-size: 13px; color: #6A6A6A; line-height: 1.4; }
       .apply {
         border: 1px solid #000; background: #fff; border-radius: 22px; padding: 10px 18px;
         font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap;
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
       }
-      .apply:hover { background: ${cfg.primary}; border-color: ${cfg.primary}; }
+      .apply:hover { background: ${cfg.primary}; border-color: ${cfg.primary}; color: #000; }
+      .apply:focus-visible { outline: 2px solid ${cfg.primary}; outline-offset: 2px; }
 
       .more { text-align: center; }
-      .more button { border: 0; background: transparent; color: #1B75BB; font-size: 14px; cursor: pointer; padding: 8px 12px; }
-      .empty { background: #F8F8F8; border-radius: 12px; padding: 20px; text-align: center; color: #6A6A6A; font-size: 14px; }
+      .more button { border: 0; background: transparent; color: #1B75BB; font-size: 14px; cursor: pointer; padding: 8px 12px; font-weight: 500; }
+      .more button:hover { text-decoration: underline; }
+      .more button:focus-visible { outline: 2px solid #1B75BB; outline-offset: 2px; border-radius: 4px; }
+      .empty { background: #F8F8F8; border-radius: 12px; padding: 20px; text-align: center; color: #6A6A6A; font-size: 14px; line-height: 1.5; }
 
       .thanks { text-align: center; padding: 22px 8px; }
       .thanks .ic {
@@ -171,24 +197,109 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       .thanks b { display: block; font-size: 17px; margin-bottom: 4px; }
       .thanks span { font-size: 13px; color: #6A6A6A; }
 
-      /* ---- Адаптив по ширине контейнера ---- */
+      /* ---- Адаптив через Container Queries (современные браузеры) ---- */
       @container (max-width: 760px) {
         .cols { grid-template-columns: 1fr; }
+        aside { order: 1; }
+        section { order: 2; }
+      }
+      @container (max-width: 480px) {
+        h2 { font-size: 24px; }
+        .modes { gap: 6px; }
+        .modes button { min-width: calc(50% - 3px); }
+        .fld { padding: 7px 12px 9px; }
+        .fld input { font-size: 15px; }
+        .card { padding: 14px 16px; }
+        .logo { width: 34px; height: 34px; font-size: 14px; }
+        .cpay b { font-size: 18px; }
       }
       @container (max-width: 420px) {
         .chead { flex-wrap: wrap; }
-        .cpay { text-align: left; width: 100%; padding-left: 50px; }
-        .cfoot { flex-direction: column; align-items: stretch; }
+        .cpay { text-align: left; width: 100%; padding-left: 50px; margin-top: 8px; }
+        .cfoot { flex-direction: column; align-items: stretch; gap: 10px; }
+        .cfoot .psk { text-align: center; }
         .apply { width: 100%; text-align: center; padding: 12px; }
+        .ptabs { padding: 6px; }
+        .ptabs button { padding: 8px 12px; font-size: 12px; }
       }
-      /* Фолбэк для браузеров без container queries */
+      @container (max-width: 375px) {
+        h2 { font-size: 22px; margin-bottom: 14px; }
+        .fld { padding: 6px 11px 8px; border-radius: 12px; }
+        .fld input { font-size: 14px; }
+        .fld > span { font-size: 11px; }
+        .tin em { font-size: 13px; padding-left: 8px; }
+        .card { padding: 12px 14px; border-radius: 12px; }
+        .logo { width: 32px; height: 32px; font-size: 13px; border-radius: 8px; }
+        .bname b { font-size: 14px; }
+        .bname span { font-size: 11px; }
+        .cpay { padding-left: 44px; }
+        .cpay b { font-size: 17px; }
+        .cpay span { font-size: 11px; }
+        .cfoot .psk { font-size: 12px; }
+        .apply { padding: 11px 16px; font-size: 13px; border-radius: 20px; }
+        .modes button { padding: 9px 6px; font-size: 12px; min-width: calc(50% - 3px); }
+        .ptabs button { padding: 7px 10px; font-size: 11px; border-radius: 8px; }
+        .note { font-size: 11px; }
+      }
+
+      /* ---- Фолбэк через @media для браузеров без Container Queries ---- */
       @supports not (container-type: inline-size) {
-        @media (max-width: 800px) { .cols { grid-template-columns: 1fr; } }
+        @media (max-width: 800px) {
+          .cols { grid-template-columns: 1fr; }
+          aside { order: 1; }
+          section { order: 2; }
+        }
+        @media (max-width: 480px) {
+          h2 { font-size: 24px; }
+          .modes { gap: 6px; }
+          .modes button { min-width: calc(50% - 3px); }
+          .fld { padding: 7px 12px 9px; }
+          .fld input { font-size: 15px; }
+          .card { padding: 14px 16px; }
+          .logo { width: 34px; height: 34px; font-size: 14px; }
+          .cpay b { font-size: 18px; }
+        }
         @media (max-width: 430px) {
           .chead { flex-wrap: wrap; }
-          .cfoot { flex-direction: column; align-items: stretch; }
-          .apply { width: 100%; }
+          .cpay { text-align: left; width: 100%; padding-left: 50px; margin-top: 8px; }
+          .cfoot { flex-direction: column; align-items: stretch; gap: 10px; }
+          .cfoot .psk { text-align: center; }
+          .apply { width: 100%; text-align: center; padding: 12px; }
+          .ptabs { padding: 6px; }
+          .ptabs button { padding: 8px 12px; font-size: 12px; }
         }
+        @media (max-width: 375px) {
+          h2 { font-size: 22px; margin-bottom: 14px; }
+          .fld { padding: 6px 11px 8px; border-radius: 12px; }
+          .fld input { font-size: 14px; }
+          .fld > span { font-size: 11px; }
+          .tin em { font-size: 13px; padding-left: 8px; }
+          .card { padding: 12px 14px; border-radius: 12px; }
+          .logo { width: 32px; height: 32px; font-size: 13px; border-radius: 8px; }
+          .bname b { font-size: 14px; }
+          .bname span { font-size: 11px; }
+          .cpay { padding-left: 44px; }
+          .cpay b { font-size: 17px; }
+          .cpay span { font-size: 11px; }
+          .cfoot .psk { font-size: 12px; }
+          .apply { padding: 11px 16px; font-size: 13px; border-radius: 20px; }
+          .modes button { padding: 9px 6px; font-size: 12px; min-width: calc(50% - 3px); }
+          .ptabs button { padding: 7px 10px; font-size: 11px; border-radius: 8px; }
+          .note { font-size: 11px; }
+        }
+      }
+
+      /* ---- Дополнительные медиа-запросы для плавной адаптивности ---- */
+      @media (max-width: 600px) {
+        .cols { gap: 18px; }
+      }
+      @media (max-width: 500px) {
+        .cols { gap: 16px; }
+        .ptabs { margin-bottom: 12px; }
+      }
+      @media (max-width: 400px) {
+        .cols { gap: 14px; }
+        .modes button { min-width: 100%; flex-basis: 100%; }
       }
     </style>
 
