@@ -564,10 +564,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     renderModal();
     document.body.style.overflow = 'hidden';
     // Фокус на первое поле после рендера
-    setTimeout(() => {
-      const nameInput = shadow.getElementById('form-name') as HTMLInputElement | null;
-      if (nameInput) nameInput.focus();
-    }, 0);
+    const nameInput = shadow.getElementById('form-name') as HTMLInputElement | null;
+    if (nameInput) nameInput.focus();
   }
 
   function closeModal(): void {
@@ -590,6 +588,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         clearInterval(countdownTimer!);
         countdownTimer = undefined;
         closeModal();
+      } else {
+        renderModal();
       }
     }, 1000);
   }
@@ -599,7 +599,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
   function validatePhone(): boolean { return digitsOnly(formData.phone).length >= 10; }
   function validateEmail(): boolean {
     if (formData.email.trim() === '') return true;
-    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(formData.email);
   }
 
   function onPhoneInput(e: Event): void {
@@ -624,11 +625,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     const isPhoneValid = validatePhone();
     const isEmailValid = formData.email.trim() === '' || validateEmail();
     
-    if (!isNameValid || !isPhoneValid) {
-      renderModal();
-      return;
-    }
-    if (!isEmailValid) {
+    if (!isNameValid || !isPhoneValid || !isEmailValid) {
       renderModal();
       return;
     }
@@ -698,7 +695,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
       const nameErr = formTouched.value && !validateName() ? ' err' : '';
       const phoneErr = formTouched.value && !validatePhone() ? ' err' : '';
-      const emailErr = formTouched.value && formData.email !== '' && !validateEmail() ? ' err' : '';
+      const emailErr = formTouched.value && formData.email.trim() !== '' && !validateEmail() ? ' err' : '';
 
       // Сохраняем фокус перед рендером
       const activeEl = shadow.activeElement as HTMLElement | null;
