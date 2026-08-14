@@ -608,7 +608,11 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
   }
 
   function onPhoneInput(e: Event): void {
-    let d = digitsOnly((e.target as HTMLInputElement).value);
+    const input = e.target as HTMLInputElement;
+    const oldCursorPos = input.selectionStart || 0;
+    const oldValue = input.value;
+    
+    let d = digitsOnly(oldValue);
     if (d.startsWith('8')) d = '7' + d.slice(1);
     if (!d.startsWith('7')) d = '7' + d;
     d = d.slice(0, 11);
@@ -618,7 +622,25 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     if (d.length >= 7) out += '-' + d.slice(7, 9);
     if (d.length >= 9) out += '-' + d.slice(9, 11);
     formData.phone = out;
-    renderModal();
+    
+    // Обновляем значение без полного рендера
+    input.value = out;
+    
+    // Вычисляем новую позицию курсора
+    const diff = out.length - oldValue.length;
+    const newCursorPos = Math.min(oldCursorPos + diff, out.length);
+    
+    requestAnimationFrame(() => {
+      input.focus();
+      try {
+        input.setSelectionRange(newCursorPos, newCursorPos);
+      } catch {}
+    });
+    
+    formTouched.value = true;
+    // Обновляем только класс ошибки, не перерисовывая всё поле
+    const phoneErr = !validatePhone();
+    input.classList.toggle('err', phoneErr);
   }
 
   async function submitForm(): Promise<void> {
@@ -758,8 +780,23 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       }
       if (emailInput) {
         emailInput.addEventListener('input', (e) => {
-          formData.email = (e.target as HTMLInputElement).value;
-          renderModal();
+          const input = e.target as HTMLInputElement;
+          const oldCursorPos = input.selectionStart || 0;
+          const oldValue = input.value;
+          
+          formData.email = oldValue;
+          
+          // Обновляем только класс ошибки, не перерисовывая всё поле
+          const emailErr = !validateEmail();
+          input.classList.toggle('err', emailErr);
+          
+          // Восстанавливаем фокус и позицию курсора
+          requestAnimationFrame(() => {
+            input.focus();
+            try {
+              input.setSelectionRange(oldCursorPos, oldCursorPos);
+            } catch {}
+          });
         });
       }
       if (submitBtn) {
