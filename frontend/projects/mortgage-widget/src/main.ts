@@ -698,9 +698,10 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       const phoneErr = formTouched.value && !validatePhone() ? ' err' : '';
       const emailErr = formTouched.value && formData.email.trim() !== '' && !validateEmail() ? ' err' : '';
 
-      // Сохраняем фокус перед рендером
-      const activeEl = shadow.activeElement as HTMLElement | null;
+      // Сохраняем ID активного элемента и позицию курсора перед рендером
+      const activeEl = shadow.activeElement as HTMLInputElement | null;
       const focusedFieldId = activeEl?.id;
+      const cursorPosition = activeEl && focusedFieldId ? activeEl.selectionStart : null;
 
       modalBody.innerHTML = `
         ${offerBadge}
@@ -725,14 +726,14 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         <p class="form-note">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</p>
       `;
 
-      // Восстанавливаем фокус и позицию курсора
+      // Восстанавливаем фокус и позицию курсора на НОВОМ элементе
       if (focusedFieldId) {
         const inputToFocus = shadow.getElementById(focusedFieldId) as HTMLInputElement | null;
         if (inputToFocus) {
           inputToFocus.focus();
-          // Восстанавливаем позицию курсора в конце
-          const len = inputToFocus.value.length;
-          inputToFocus.setSelectionRange(len, len);
+          // Восстанавливаем позицию курсора
+          const pos = cursorPosition ?? inputToFocus.value.length;
+          inputToFocus.setSelectionRange(pos, pos);
         }
       }
 
