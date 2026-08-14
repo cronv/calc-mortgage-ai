@@ -473,7 +473,7 @@ import { copyText } from '../../core/share-link';
               </div>
               <div>
                 <b>{{ o.bank_name }}</b>
-                <span>{{ d().propertyType || 'Ипотека' }} · {{ o.program_name }} · от {{ o.calculated_rate }}%</span>
+                <span>{{ d().propertyType || 'Ипотека' }} · {{ o.program_name }} · от {{ flow.rate() }}%</span>
               </div>
             </div>
           }
@@ -811,7 +811,7 @@ export class ApplicationWizardComponent {
           offer: this.flow.offer() ? {
             bank: this.flow.offer()!.bank_name,
             program: this.flow.offer()!.program_name,
-            rate: this.flow.offer()!.calculated_rate,
+            rate: this.flow.rate(),
           } : null,
           calculation: {
             cost: d.cost, down: d.down, months: this.flow.months(),

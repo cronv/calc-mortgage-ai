@@ -270,7 +270,7 @@ export class ApplicationFlowService {
 
     return [
       { title: 'Параметры кредита', rows: [
-        ['Банк', o ? `${o.bank_name} · ${o.program_name} · от ${o.calculated_rate}%` : '—'],
+        ['Банк', o ? `${o.bank_name} · ${o.program_name} · от ${this.rate()}%` : '—'],
         ['Тип недвижимости', t(d.propertyType)],
         ['Стоимость недвижимости', money(d.cost)],
         ['Первоначальный взнос', money(d.down)],
