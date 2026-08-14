@@ -563,6 +563,11 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     modalOpen = true;
     renderModal();
     document.body.style.overflow = 'hidden';
+    // Фокус на первое поле после рендера
+    setTimeout(() => {
+      const nameInput = shadow.getElementById('form-name') as HTMLInputElement | null;
+      if (nameInput) nameInput.focus();
+    }, 0);
   }
 
   function closeModal(): void {
@@ -613,8 +618,20 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
   async function submitForm(): Promise<void> {
     formTouched.value = true;
-    if (!validateName() || !validatePhone()) return;
-    if (formData.email !== '' && !validateEmail()) return;
+    
+    // Проверяем валидность всех полей
+    const isNameValid = validateName();
+    const isPhoneValid = validatePhone();
+    const isEmailValid = formData.email.trim() === '' || validateEmail();
+    
+    if (!isNameValid || !isPhoneValid) {
+      renderModal();
+      return;
+    }
+    if (!isEmailValid) {
+      renderModal();
+      return;
+    }
 
     formState = 'sending';
     renderModal();
@@ -646,7 +663,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       if (!res.ok) throw new Error('bad status ' + res.status);
       formState = 'success';
       startCountdown();
-    } catch {
+    } catch (err) {
+      console.error('Ошибка отправки заявки:', err);
       formState = 'error';
     }
     renderModal();
@@ -682,6 +700,10 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       const phoneErr = formTouched.value && !validatePhone() ? ' err' : '';
       const emailErr = formTouched.value && formData.email !== '' && !validateEmail() ? ' err' : '';
 
+      // Сохраняем фокус перед рендером
+      const activeEl = shadow.activeElement as HTMLElement | null;
+      const focusedFieldId = activeEl?.id;
+
       modalBody.innerHTML = `
         ${offerBadge}
         ${snapHtml}
@@ -704,6 +726,17 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         </button>
         <p class="form-note">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</p>
       `;
+
+      // Восстанавливаем фокус и позицию курсора
+      if (focusedFieldId) {
+        const inputToFocus = shadow.getElementById(focusedFieldId) as HTMLInputElement | null;
+        if (inputToFocus) {
+          inputToFocus.focus();
+          // Восстанавливаем позицию курсора в конце
+          const len = inputToFocus.value.length;
+          inputToFocus.setSelectionRange(len, len);
+        }
+      }
 
       const nameInput = shadow.getElementById('form-name') as HTMLInputElement | null;
       const phoneInput = shadow.getElementById('form-phone') as HTMLInputElement | null;
