@@ -564,10 +564,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     renderModal();
     document.body.style.overflow = 'hidden';
     // Фокус на первое поле после рендера
-    requestAnimationFrame(() => {
-      const nameInput = shadow.getElementById('form-name') as HTMLInputElement | null;
-      if (nameInput) nameInput.focus();
-    });
+    const nameInput = shadow.getElementById('form-name') as HTMLInputElement | null;
+    if (nameInput) nameInput.focus();
   }
 
   function closeModal(): void {
@@ -590,6 +588,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         clearInterval(countdownTimer!);
         countdownTimer = undefined;
         closeModal();
+      } else {
+        renderModal();
       }
     }, 1000);
   }
@@ -695,7 +695,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
       const nameErr = formTouched.value && !validateName() ? ' err' : '';
       const phoneErr = formTouched.value && !validatePhone() ? ' err' : '';
-      const emailErr = formTouched.value && !validateEmail() ? ' err' : '';
+      const emailErr = formTouched.value && formData.email.trim() !== '' && !validateEmail() ? ' err' : '';
 
       // Сохраняем фокус перед рендером
       const activeEl = shadow.activeElement as HTMLElement | null;
