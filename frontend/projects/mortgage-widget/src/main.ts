@@ -135,18 +135,18 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         background: #fff; border: 1px solid #DEDEDE; border-radius: 14px;
         padding: 14px 16px; margin-bottom: 12px; max-width: 100%; overflow: hidden;
       }
-      .chead { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+      .chead { display: grid; grid-template-columns: 38px 1fr auto; grid-template-areas: "logo bname cpay"; gap: 12px; align-items: start; }
       .logo {
         width: 38px; height: 38px; border-radius: 10px; background: #1B75BB; color: #fff;
         font-weight: 700; font-size: 16px; display: flex; align-items: center;
-        justify-content: center; flex: 0 0 38px; overflow: hidden;
+        justify-content: center; grid-area: logo; overflow: hidden;
       }
-      .bname { min-width: 0; flex: 1 1 auto; max-width: calc(100% - 50px); word-wrap: break-word; }
+      .bname { grid-area: bname; min-width: 0; word-wrap: break-word; }
       .bname b { display: block; font-size: 15px; font-weight: 600; line-height: 1.3; overflow-wrap: break-word; }
-      .bname span { font-size: 12px; color: #6A6A6A; line-height: 1.3; }
-      .cpay { text-align: right; flex: 0 0 auto; min-width: 120px; }
+      .bname span { font-size: 12px; color: #6A6A6A; line-height: 1.3; display: block; }
+      .cpay { grid-area: cpay; text-align: right; min-width: 120px; }
       .cpay b { display: block; font-size: clamp(15px, 4cqi, 18px); font-weight: 700; white-space: nowrap; line-height: 1.3; }
-      .cpay span { font-size: 12px; color: #6A6A6A; white-space: nowrap; }
+      .cpay span { font-size: 12px; color: #6A6A6A; white-space: nowrap; display: block; }
       .cfoot {
         display: flex; justify-content: space-between; align-items: center; gap: 12px;
         margin-top: 12px; padding-top: 12px; border-top: 1px solid #EEE; flex-wrap: wrap;
@@ -195,13 +195,12 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       @media (max-width: 620px) {
         .pw { padding: 0 4px; }
         h2 { font-size: 18px; margin-bottom: 10px; }
-        .chead { gap: 10px; }
-        .logo { width: 36px; height: 36px; flex: 0 0 36px; font-size: 14px; }
-        .bname { max-width: calc(100% - 46px); }
+        .chead { grid-template-columns: 36px 1fr auto; gap: 10px; }
+        .logo { width: 36px; height: 36px; font-size: 14px; }
         .bname b { font-size: 14px; }
         .bname span { font-size: 11px; }
-        .cpay { min-width: 100px; text-align: left; }
-        .cpay b { font-size: 16px; }
+        .cpay { min-width: 100px; text-align: right; }
+        .cpay b { font-size: 15px; }
         .cfoot { flex-direction: column; align-items: stretch; gap: 10px; }
         .cfoot .psk { text-align: center; }
         .apply { width: 100%; text-align: center; padding: 12px; }
@@ -218,8 +217,12 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         .ptabs { margin-bottom: 10px; }
         .ptabs button { padding: 7px 10px; font-size: 11px; border-radius: 8px; }
         .card { padding: 10px 12px; margin-bottom: 10px; border-radius: 12px; }
-        .chead { flex-wrap: wrap; }
-        .cpay { width: 100%; padding-left: 46px; margin-top: -26px; }
+        .chead { grid-template-columns: 32px 1fr; grid-template-areas: "logo bname" "logo cpay"; gap: 8px; }
+        .logo { grid-area: logo; width: 32px; height: 32px; font-size: 13px; }
+        .bname { grid-area: bname; }
+        .cpay { grid-area: cpay; text-align: left; min-width: 0; padding-left: 4px; }
+        .cpay b { font-size: 15px; }
+        .cpay span { font-size: 11px; }
         .cfoot .psk { font-size: 12px; }
         .apply { padding: 11px; font-size: 13px; }
         .note { font-size: 11px; }
@@ -233,13 +236,14 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         .fld > span { font-size: 11px; }
         .fld input { font-size: 13px; }
         .tin em { font-size: 12px; padding-left: 6px; }
-        .logo { width: 32px; height: 32px; flex: 0 0 32px; font-size: 13px; }
-        .bname { max-width: calc(100% - 42px); }
+        .chead { grid-template-columns: 30px 1fr; grid-template-areas: "logo bname" "logo cpay"; gap: 6px; }
+        .logo { grid-area: logo; width: 30px; height: 30px; font-size: 12px; }
+        .bname { grid-area: bname; }
         .bname b { font-size: 13px; }
         .bname span { font-size: 10px; }
-        .cpay { padding-left: 42px; }
+        .cpay { grid-area: cpay; padding-left: 2px; }
         .cpay b { font-size: 14px; }
-        .cpay span { font-size: 11px; }
+        .cpay span { font-size: 10px; }
         .cfoot .psk { font-size: 11px; }
         .apply { padding: 10px; font-size: 12px; border-radius: 20px; }
         .ptabs button { padding: 6px 8px; font-size: 10px; }
@@ -249,7 +253,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       @supports not (container-type: inline-size) {
         @media (max-width: 800px) { .cols { grid-template-columns: 1fr; } }
         @media (max-width: 430px) {
-          .chead { flex-wrap: wrap; }
+          .chead { grid-template-columns: 32px 1fr; grid-template-areas: "logo bname" "logo cpay"; }
           .cfoot { flex-direction: column; align-items: stretch; }
           .apply { width: 100%; }
         }
@@ -259,9 +263,10 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       @container (max-width: 760px) {
         .cols { grid-template-columns: 1fr; }
       }
-      @container (max-width: 420px) {
-        .chead { flex-wrap: wrap; }
-        .cpay { text-align: left; width: 100%; padding-left: 50px; }
+      @container (max-width: 480px) {
+        .chead { grid-template-columns: 32px 1fr; grid-template-areas: "logo bname" "logo cpay"; gap: 8px; }
+        .logo { width: 32px; height: 32px; }
+        .cpay { text-align: left; min-width: 0; padding-left: 4px; }
         .cfoot { flex-direction: column; align-items: stretch; }
         .apply { width: 100%; text-align: center; padding: 12px; }
       }
