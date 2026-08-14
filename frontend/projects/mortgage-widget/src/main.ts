@@ -66,6 +66,17 @@ function loanFromPayment(payment: number, months: number, rate: number): number 
 
 const fmt = (n: number): string => Math.round(n).toLocaleString('ru-RU');
 
+/** Формат денег с пробелами-разделителями. */
+function formatMoney(n: number): string {
+  return n > 0 ? Math.round(n).toLocaleString('ru-RU') : '';
+}
+
+/** Очистить строку от всех нецифровых символов и вернуть число. */
+function parseMoney(raw: string): number {
+  const digits = raw.replace(/[^0-9]/g, '');
+  return Number(digits) || 0;
+}
+
 function matchesProgram(o: Offer, key: string): boolean {
   return o.tabs_type === key;
 }
@@ -362,15 +373,15 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
           </div>
           <label class="fld" id="f-cost">
             <span>Стоимость недвижимости</span>
-            <input id="cost" inputmode="numeric" value="4 000 000">
+            <input id="cost" type="text" inputmode="numeric" value="4 000 000">
           </label>
           <label class="fld" id="f-pay" style="display:none">
             <span>Желаемый платёж, ₽/мес</span>
-            <input id="pay" inputmode="numeric" value="30 000">
+            <input id="pay" type="text" inputmode="numeric" value="30 000">
           </label>
           <label class="fld">
             <span>Первоначальный взнос</span>
-            <input id="down" inputmode="numeric" value="2 500 000">
+            <input id="down" type="text" inputmode="numeric" value="2 500 000">
           </label>
           <label class="fld">
             <span>Ставка</span>
@@ -488,13 +499,38 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     fetchTimer = window.setTimeout(() => { void fetchOffers(); }, 350);
   }
 
-  ['cost', 'pay', 'down', 'rate', 'term'].forEach((id) =>
+  // ---- Обработчики для полей с маской денег (cost, pay, down) ----
+  function onMoneyInput(e: Event, id: string): void {
+    const input = e.target as HTMLInputElement;
+    const raw = parseMoney(input.value);
+    // Форматируем с разделителями прямо во время ввода
+    const formatted = formatMoney(raw);
+    const cursorPos = input.selectionStart || 0;
+    const oldLen = input.value.length;
+    
+    input.value = formatted;
+    
+    // Корректируем позицию курсора
+    const newLen = formatted.length;
+    const diff = newLen - oldLen;
+    const newPos = Math.min(Math.max(0, cursorPos + diff), newLen);
+    
+    requestAnimationFrame(() => {
+      input.focus();
+      try {
+        input.setSelectionRange(newPos, newPos);
+      } catch {}
+    });
+    
+    scheduleFetch();
+  }
+
+  ['cost', 'pay', 'down'].forEach((id) => {
+    $(id).addEventListener('input', (e) => onMoneyInput(e, id));
+  });
+
+  ['rate', 'term'].forEach((id) =>
     $(id).addEventListener('input', scheduleFetch));
-  ['cost', 'pay', 'down'].forEach((id) =>
-    $(id).addEventListener('blur', () => {
-      const v = num(id);
-      if (v > 0) ($(id) as HTMLInputElement).value = v.toLocaleString('ru-RU');
-    }));
 
   // ---- Рендер списка ----
   function render(): void {
@@ -598,14 +634,21 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
   function digitsOnly(s: string): string { return s.replace(/\D+/g, ''); }
   function validatePhone(): boolean { return digitsOnly(formData.phone).length >= 10; }
   function validateEmail(): boolean {
-    if (formData.email.trim() === '') return true;
-    // RFC 5322 compliant regex for general email validation
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-    return emailRegex.test(formData.email);
+    const email = formData.email.trim();
+    if (email === '') return false;
+    // Проверяем наличие @ и .
+    if (!email.includes('@') || !email.includes('.')) return false;
+    // Базовая проверка формата email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
   function onPhoneInput(e: Event): void {
-    let d = digitsOnly((e.target as HTMLInputElement).value);
+    const input = e.target as HTMLInputElement;
+    const oldCursorPos = input.selectionStart || 0;
+    const oldValue = input.value;
+    
+    let d = digitsOnly(oldValue);
     if (d.startsWith('8')) d = '7' + d.slice(1);
     if (!d.startsWith('7')) d = '7' + d;
     d = d.slice(0, 11);
@@ -615,7 +658,25 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     if (d.length >= 7) out += '-' + d.slice(7, 9);
     if (d.length >= 9) out += '-' + d.slice(9, 11);
     formData.phone = out;
-    renderModal();
+    
+    // Обновляем значение без полного рендера
+    input.value = out;
+    
+    // Вычисляем новую позицию курсора
+    const diff = out.length - oldValue.length;
+    const newCursorPos = Math.min(oldCursorPos + diff, out.length);
+    
+    requestAnimationFrame(() => {
+      input.focus();
+      try {
+        input.setSelectionRange(newCursorPos, newCursorPos);
+      } catch {}
+    });
+    
+    formTouched.value = true;
+    // Обновляем только класс ошибки, не перерисовывая всё поле
+    const phoneErr = !validatePhone();
+    input.classList.toggle('err', phoneErr);
   }
 
   async function submitForm(): Promise<void> {
@@ -624,7 +685,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
     // Проверяем валидность всех полей
     const isNameValid = validateName();
     const isPhoneValid = validatePhone();
-    const isEmailValid = formData.email.trim() === '' || validateEmail();
+    const isEmailValid = validateEmail();
     
     if (!isNameValid || !isPhoneValid || !isEmailValid) {
       renderModal();
@@ -696,11 +757,13 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
 
       const nameErr = formTouched.value && !validateName() ? ' err' : '';
       const phoneErr = formTouched.value && !validatePhone() ? ' err' : '';
-      const emailErr = formTouched.value && formData.email.trim() !== '' && !validateEmail() ? ' err' : '';
+      const emailErr = formTouched.value && !validateEmail() ? ' err' : '';
 
-      // Сохраняем фокус перед рендером
-      const activeEl = shadow.activeElement as HTMLElement | null;
-      const focusedFieldId = activeEl?.id;
+      // Сохраняем текущий элемент в фокусе и позицию курсора перед рендером
+      const activeEl = shadow.activeElement as HTMLInputElement | null;
+      const wasFocused = activeEl !== null;
+      const cursorPos = wasFocused && activeEl.selectionStart !== null ? activeEl.selectionStart : 0;
+      const focusedFieldId = wasFocused ? activeEl.id : null;
 
       modalBody.innerHTML = `
         ${offerBadge}
@@ -730,9 +793,9 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         const inputToFocus = shadow.getElementById(focusedFieldId) as HTMLInputElement | null;
         if (inputToFocus) {
           inputToFocus.focus();
-          // Восстанавливаем позицию курсора в конце
-          const len = inputToFocus.value.length;
-          inputToFocus.setSelectionRange(len, len);
+          try {
+            inputToFocus.setSelectionRange(cursorPos, cursorPos);
+          } catch {}
         }
       }
 
@@ -753,8 +816,23 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       }
       if (emailInput) {
         emailInput.addEventListener('input', (e) => {
-          formData.email = (e.target as HTMLInputElement).value;
-          renderModal();
+          const input = e.target as HTMLInputElement;
+          const oldCursorPos = input.selectionStart || 0;
+          const oldValue = input.value;
+          
+          formData.email = oldValue;
+          
+          // Обновляем только класс ошибки, не перерисовывая всё поле
+          const emailErr = !validateEmail();
+          input.classList.toggle('err', emailErr);
+          
+          // Восстанавливаем фокус и позицию курсора
+          requestAnimationFrame(() => {
+            input.focus();
+            try {
+              input.setSelectionRange(oldCursorPos, oldCursorPos);
+            } catch {}
+          });
         });
       }
       if (submitBtn) {

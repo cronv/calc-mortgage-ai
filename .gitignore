@@ -2,6 +2,11 @@
 # Dependencies
 node_modules/
 
+# Build outputs
+dist/
+build/
+target/
+
 # Logs and temp files
 *.log
 *.tmp
@@ -9,7 +14,7 @@ node_modules/
 # Environment
 .env
 .env.local
-.env.*
+*.env.*
 
 # Editors
 .vscode/
@@ -20,28 +25,34 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
-env/
-venv/
-.venv/
-.ENV
-.python-version
 
-# Build outputs
-dist/
-build/
-*.egg-info/
-.eggs/
+# Compiled files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
 
-# Testing
-.coverage
-htmlcov/
-.nyc_output/
+# Coverage
 coverage/
-.pytest_cache/
+htmlcov/
+.coverage
+
+# MyPy
 .mypy_cache/
 
-# OS generated files
+# Pytest
+.pytest_cache/
+
+# Gradle
+.gradle/
+
+# Temporary files
+*.swp
+*.swo
+*~
 .DS_Store
 Thumbs.db
 
