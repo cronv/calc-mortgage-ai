@@ -67,7 +67,7 @@ function loanFromPayment(payment: number, months: number, rate: number): number 
 const fmt = (n: number): string => Math.round(n).toLocaleString('ru-RU');
 
 function matchesProgram(o: Offer, key: string): boolean {
-  return o.tabs_type === key;
+  return o.tabs_type === key || (key === 'STANDARD' && !o.tabs_type);
 }
 
 function mount(host: HTMLElement, cfg: WidgetConfig): void {
@@ -92,12 +92,15 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       .modes button {
         flex: 1; border: 1px solid #000; background: #fff; border-radius: 22px;
         padding: 10px 8px; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap;
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
       }
-      .modes button.on { background: ${cfg.primary}; border-color: ${cfg.primary}; font-weight: 600; }
+      .modes button.on { background: ${cfg.primary}; border-color: ${cfg.primary}; color: #000; font-weight: 600; }
+      .modes button:hover:not(.on) { background: #f0f0f0; }
 
       .fld {
         display: block; background: #fff; border: 1px solid #DEDEDE; border-radius: 14px;
         padding: 8px 14px 10px; margin-bottom: 10px; min-width: 0;
+        transition: border-color 0.2s ease;
       }
       .fld:focus-within { border-color: #000; }
       .fld > span { display: block; font-size: 12px; color: #6A6A6A; margin-bottom: 2px; }
@@ -115,19 +118,24 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       .ptabs {
         display: flex; gap: 4px; background: #131921; border-radius: 16px; padding: 8px;
         overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-bottom: 14px;
+        -ms-overflow-style: none;
       }
       .ptabs::-webkit-scrollbar { display: none; }
       .ptabs button {
         border: 0; background: transparent; color: #fff; border-radius: 10px;
         padding: 9px 14px; font-size: 13px; font-weight: 500; cursor: pointer;
         white-space: nowrap; flex: 0 0 auto;
+        transition: background-color 0.2s ease, color 0.2s ease;
       }
+      .ptabs button:hover:not(.on) { background: rgba(255,255,255,0.1); }
       .ptabs button.on { background: ${cfg.primary}; color: #000; font-weight: 600; }
 
       .card {
         background: #fff; border: 1px solid #DEDEDE; border-radius: 14px;
         padding: 16px 18px; margin-bottom: 12px;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
       }
+      .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
       .chead { display: flex; gap: 12px; align-items: flex-start; }
       .logo {
         width: 38px; height: 38px; border-radius: 10px; background: #1B75BB; color: #fff;
@@ -148,11 +156,13 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       .apply {
         border: 1px solid #000; background: #fff; border-radius: 22px; padding: 10px 18px;
         font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap;
+        transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
       }
-      .apply:hover { background: ${cfg.primary}; border-color: ${cfg.primary}; }
+      .apply:hover { background: ${cfg.primary}; border-color: ${cfg.primary}; color: #000; }
 
       .more { text-align: center; }
-      .more button { border: 0; background: transparent; color: #1B75BB; font-size: 14px; cursor: pointer; padding: 8px 12px; }
+      .more button { border: 0; background: transparent; color: #1B75BB; font-size: 14px; cursor: pointer; padding: 8px 12px; text-decoration: underline; }
+      .more button:hover { color: #0d5a8a; }
       .empty { background: #F8F8F8; border-radius: 12px; padding: 20px; text-align: center; color: #6A6A6A; font-size: 14px; }
 
       .thanks { text-align: center; padding: 22px 8px; }
@@ -163,23 +173,64 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       .thanks b { display: block; font-size: 17px; margin-bottom: 4px; }
       .thanks span { font-size: 13px; color: #6A6A6A; }
 
-      /* ---- Адаптив по ширине контейнера ---- */
+      /* ---- Адаптив по ширине контейнера (Container Queries) ---- */
       @container (max-width: 760px) {
         .cols { grid-template-columns: 1fr; }
+        aside { order: 2; }
+        section { order: 1; }
       }
       @container (max-width: 420px) {
+        h2 { font-size: 20px; }
+        .modes { flex-direction: column; }
+        .modes button { width: 100%; }
+        .ptabs { gap: 6px; }
+        .ptabs button { padding: 8px 10px; font-size: 12px; }
         .chead { flex-wrap: wrap; }
-        .cpay { text-align: left; width: 100%; padding-left: 50px; }
+        .cpay { text-align: left; width: 100%; padding-left: 50px; margin-top: 8px; }
         .cfoot { flex-direction: column; align-items: stretch; }
         .apply { width: 100%; text-align: center; padding: 12px; }
+        .fld { padding: 10px 12px; }
+        .fld input { font-size: 15px; }
       }
-      /* Фолбэк для браузеров без container queries */
+
+      /* ---- Фолбэк для браузеров без Container Queries (@media) ---- */
       @supports not (container-type: inline-size) {
-        @media (max-width: 800px) { .cols { grid-template-columns: 1fr; } }
+        @media (max-width: 800px) {
+          .cols { grid-template-columns: 1fr; }
+          aside { order: 2; }
+          section { order: 1; }
+        }
         @media (max-width: 430px) {
+          h2 { font-size: 20px; }
+          .modes { flex-direction: column; }
+          .modes button { width: 100%; }
+          .ptabs { gap: 6px; }
+          .ptabs button { padding: 8px 10px; font-size: 12px; }
           .chead { flex-wrap: wrap; }
+          .cpay { text-align: left; width: 100%; padding-left: 50px; margin-top: 8px; }
           .cfoot { flex-direction: column; align-items: stretch; }
-          .apply { width: 100%; }
+          .apply { width: 100%; text-align: center; padding: 12px; }
+          .fld { padding: 10px 12px; }
+          .fld input { font-size: 15px; }
+        }
+      }
+
+      /* ---- Кроссбраузерные улучшения ---- */
+      @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        .fld input::-webkit-outer-spin-button,
+        .fld input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        .fld input[type=number] {
+          -moz-appearance: textfield;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
         }
       }
     </style>
