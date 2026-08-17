@@ -156,9 +156,10 @@ export class ApplicationFlowService {
     };
     this.rate.set(num('rate', 15.5));
     const bank = q.get('bank');
+    const logo = q.get('logo');
     if (bank) {
       this.offer.set({
-        bank_name: bank, bank_logo_url: null, program_name: q.get('prog') ?? 'Стандартная',
+        bank_name: bank, bank_logo_url: logo, program_name: q.get('prog') ?? 'Стандартная',
         program_type: 'STANDARD', calculated_rate: this.rate(),
         monthly_payment: 0, overpayment: 0, total_payout: 0,
         min_down_payment: 0, application_url: null,
@@ -188,7 +189,11 @@ export class ApplicationFlowService {
     });
     if (d.propertyType) q.set('pt', d.propertyType);
     const o = this.offer();
-    if (o) { q.set('bank', o.bank_name); q.set('prog', o.program_name); }
+    if (o) {
+      q.set('bank', o.bank_name);
+      q.set('prog', o.program_name);
+      if (o.bank_logo_url) q.set('logo', o.bank_logo_url);
+    }
     return `${location.origin}${location.pathname}?${q.toString()}`;
   }
 

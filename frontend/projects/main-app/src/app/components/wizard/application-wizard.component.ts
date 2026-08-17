@@ -13,6 +13,14 @@ import {
 import { exportAnketaPdf, exportAnketaDocx } from '../../core/anketa-export';
 import { copyText } from '../../core/share-link';
 
+/** Детеминированный цвет плашки-логотипа по имени банка. */
+function logoBg(name: string): string {
+  const palette = ['#1B75BB', '#D6423A', '#0F6E56', '#7F77DD', '#BA7517', '#232F3D'];
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return palette[h % palette.length];
+}
+
 /**
  * Мастер «Подать заявку» из 5 шагов (по макетам):
  * 1 — параметры кредита; затем авторизация (телефон → код из СМС);
@@ -469,15 +477,15 @@ import { copyText } from '../../core/share-link';
           </div>
           @if (flow.offer(); as o) {
             <div class="sbank">
-              <div class="slogo">
+              <div class="slogo" [style.background]="o.bank_logo_url ? '#fff' : logoBg(o.bank_name)">
                 @if (o.bank_logo_url) {
-                    <img [src]="o.bank_logo_url" [alt]="o.bank_name" class="slogo" />
-                } @else {
-                    {{ o.bank_name.charAt(0) }}
+                    <img [src]="o.bank_logo_url" [alt]="o.bank_name" />
+                } @else if (o.bank_name && o.bank_name.length > 0) {
+                    {{ o.bank_name.charAt(0).toUpperCase() }}
                 }
               </div>
               <div>
-                <b>{{ o.bank_name }}</b>
+                <b>{{ o.bank_name || 'Банк' }}</b>
                 <span>{{ d().propertyType || 'Ипотека' }} · {{ o.program_name }} · от {{ flow.rate() }}%</span>
               </div>
             </div>
@@ -560,6 +568,7 @@ import { copyText } from '../../core/share-link';
     .sgrid span{font-size:13px;color:var(--muted)}
     .sbank{display:flex;gap:11px;align-items:flex-start}
     .slogo{width:38px;height:38px;border-radius:10px;background:#1B75BB;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+    .slogo img{max-width:100%;max-height:100%;object-fit:contain}
     .sbank b{display:block;font-size:15px;font-weight:700}
     .sbank span{font-size:12px;color:var(--muted);line-height:1.4}
 
