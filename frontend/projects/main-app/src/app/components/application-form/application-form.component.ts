@@ -38,7 +38,7 @@ type FormState = 'idle' | 'sending' | 'success' | 'error';
 
       <label class="fld">
         <span>Телефон <i>*</i></span>
-        <input [value]="phone()" (input)="onPhone($event)" inputmode="tel"
+        <input [value]="phone()" (input)="onPhone($event)" inputmode="tel" maxlength="18"
                [class.err]="touched() && !phoneValid()" placeholder="+7 (___) ___-__-__">
       </label>
 

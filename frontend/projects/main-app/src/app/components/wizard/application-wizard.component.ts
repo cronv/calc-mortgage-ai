@@ -42,7 +42,7 @@ import { copyText } from '../../core/share-link';
             <p class="ahint">Укажите номер телефона, на который поступит бесплатный звонок с кодом</p>
             <div class="phonefld" [class.errb]="authTouched() && !phoneValid()">
               <span class="flag">🇷🇺</span>
-              <input type="tel" inputmode="tel" [value]="flow.data().phone"
+              <input type="tel" inputmode="tel" maxlength="18" [value]="flow.data().phone"
                      placeholder="+7 900 000-00-00" (input)="onPhone($event)">
             </div>
             <button type="button" class="cont" (click)="requestCode()">Получить код</button>
@@ -184,12 +184,12 @@ import { copyText } from '../../core/share-link';
               <div class="frow">
                 <label class="fld" [class.err]="touched() && !d().passport">
                   <span>Серия и номер паспорта</span>
-                  <input type="text" inputmode="numeric" [value]="d().passport" placeholder="0000 000000"
+                  <input type="text" inputmode="numeric" maxlength="15" [value]="d().passport" placeholder="0000 000000"
                          (input)="onPassport($event)">
                 </label>
                 <label class="fld">
                   <span>Код подразделения</span>
-                  <input type="text" inputmode="numeric" [value]="d().passportCode" placeholder="000-000"
+                  <input type="text" inputmode="numeric" maxlength="7" [value]="d().passportCode" placeholder="000-000"
                          (input)="onPassportCode($event)">
                 </label>
               </div>
@@ -293,7 +293,7 @@ import { copyText } from '../../core/share-link';
                 </div>
                 <div class="frow">
                   <label class="fld"><span>Рабочий телефон</span>
-                    <input type="tel" inputmode="tel" [value]="d().workPhone" placeholder="+7 (9" (input)="set('workPhone', val($event))"></label>
+                    <input type="tel" inputmode="tel" maxlength="18" [value]="d().workPhone" placeholder="+7 (9" (input)="set('workPhone', val($event))"></label>
                   <label class="fld"><span>Численность работников</span>
                     <select [value]="d().staffCount" (change)="set('staffCount', val($event))">
                       <option value="" disabled>Выберите</option>
@@ -317,7 +317,7 @@ import { copyText } from '../../core/share-link';
                     [value]="d().orgAddress" [provider]="addressProvider" (valueChange)="set('orgAddress', $event)" /></label>
                 <div class="frow">
                   <label class="fld" [class.err]="touched() && d().inn !== '' && !validateInn(d().inn)"><span>ИНН</span>
-                    <input type="text" inputmode="numeric" [value]="d().inn" placeholder="0000000000 или 000000000000"
+                    <input type="text" inputmode="numeric" maxlength="12" [value]="d().inn" placeholder="0000000000 или 000000000000"
                            (input)="onInn($event)"></label>
 
                   <!-- Зарплатный банк: список с логотипами и поиском -->
@@ -397,7 +397,7 @@ import { copyText } from '../../core/share-link';
                           <label class="fld"><span>Отчество</span>
                             <input type="text" [value]="c.middleName" placeholder="Введите" (input)="setCob(ci, 'middleName', $event)"></label>
                           <label class="fld"><span>Телефон</span>
-                            <input type="tel" [value]="c.phone" placeholder="+7" (input)="setCob(ci, 'phone', $event)"></label>
+                            <input type="tel" maxlength="18" [value]="c.phone" placeholder="+7" (input)="setCob(ci, 'phone', $event)"></label>
                         </div>
                         <button type="button" class="rmcob" (click)="removeCoborrower(ci)">Удалить</button>
                       </div>
@@ -441,7 +441,7 @@ import { copyText } from '../../core/share-link';
                 </label>
                 <label class="fld" [class.err]="touched() && d().snils !== '' && !validateSnils(d().snils)">
                   <span>СНИЛС</span>
-                  <input type="text" inputmode="numeric" [value]="d().snils" placeholder="000-000-000 00"
+                  <input type="text" inputmode="numeric" maxlength="14" [value]="d().snils" placeholder="000-000-000 00"
                          (input)="onSnils($event)">
                 </label>
               </div>
