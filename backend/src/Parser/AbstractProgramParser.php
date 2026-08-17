@@ -91,22 +91,28 @@ abstract class AbstractProgramParser
     {
         $nameLower = mb_strtolower($name);
 
-        if (str_contains($nameLower, 'семейн')) {
+        // Семейная ипотека
+        if (str_contains($nameLower, 'семей') || str_contains($nameLower, 'для семьи') || str_contains($nameLower, 'семья')) {
             return 'FAMILY';
         }
-        if (str_contains($nameLower, 'военн')) {
+        // Военная ипотека
+        if (str_contains($nameLower, 'военн') || str_contains($nameLower, 'для военных')) {
             return 'MILITARY';
         }
-        if (str_contains($nameLower, 'it') || str_contains($nameLower, 'ит-')) {
+        // IT-ипотека
+        if (str_contains($nameLower, 'it') || str_contains($nameLower, 'ит-') || str_contains($nameLower, 'айти') || str_contains($nameLower, 'для it')) {
             return 'IT';
         }
-        if (str_contains($nameLower, 'дальневосточ')) {
+        // Дальневосточная ипотека
+        if (str_contains($nameLower, 'дальневосточ') || str_contains($nameLower, 'дальний восток')) {
             return 'FAR_EAST';
         }
-        if (str_contains($nameLower, 'арктич')) {
+        // Арктическая ипотека
+        if (str_contains($nameLower, 'арктич') || str_contains($nameLower, 'арктика')) {
             return 'ARCTIC';
         }
-        if (str_contains($nameLower, 'сельск')) {
+        // Сельская ипотека
+        if (str_contains($nameLower, 'сельск') || str_contains($nameLower, 'для села') || str_contains($nameLower, 'сельская местность')) {
             return 'RURAL';
         }
 
