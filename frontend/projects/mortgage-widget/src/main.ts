@@ -300,8 +300,8 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       /* Малые мобильные ≤480px */
       @media (max-width: 480px) {
         .pw { padding: 0 2px; }
-        .modes { flex-direction: column; gap: 6px; }
-        .modes button { width: 100%; text-align: center; }
+        .modes { gap: 6px; }
+        .modes button { padding: 8px 6px; font-size: 12px; }
         .fld { margin-bottom: 8px; }
         .fld input { font-size: 14px; }
         .tin em { font-size: 13px; padding-left: 8px; }
@@ -317,6 +317,12 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
         .cfoot .psk { font-size: 12px; }
         .apply { padding: 11px; font-size: 13px; }
         .note { font-size: 11px; }
+      }
+
+      /* Очень малые экраны ≤340px — кнопки друг под другом */
+      @media (max-width: 340px) {
+        .modes { flex-direction: column; gap: 6px; }
+        .modes button { width: 100%; text-align: center; }
       }
 
       /* Очень малые экраны ≤375px (минимальная ширина) */
@@ -552,7 +558,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       <div class="card">
         <div class="chead">
           <div class="logo">${logoContent}</div>
-          <div class="bname"><b></b><span>Вторичное жильё</span></div>
+          <div class="bname"><b></b><span>${o.program_name}</span></div>
           <div class="cpay"><b>${fmt(o.monthly_payment)} ₽/мес</b><span>от ${o.calculated_rate}%</span></div>
         </div>
         <div class="cfoot">

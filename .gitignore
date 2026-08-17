@@ -7,11 +7,11 @@ dist/
 build/
 target/
 
-# Logs and temp files
+# Logs and temporary files
 *.log
 *.tmp
 
-# Environment
+# Environment variables
 .env
 .env.local
 *.env.*
@@ -48,13 +48,6 @@ htmlcov/
 
 # Gradle
 .gradle/
-
-# Temporary files
-*.swp
-*.swo
-*~
-.DS_Store
-Thumbs.db
 
 # Compressed files
 *.zip
