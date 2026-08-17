@@ -42,7 +42,7 @@ import { copyText } from '../../core/share-link';
             <p class="ahint">Укажите номер телефона, на который поступит бесплатный звонок с кодом</p>
             <div class="phonefld" [class.errb]="authTouched() && !phoneValid()">
               <span class="flag">🇷🇺</span>
-              <input type="tel" inputmode="tel" maxlength="18" [value]="flow.data().phone"
+              <input type="tel" inputmode="tel" maxlength="16" [value]="flow.data().phone"
                      placeholder="+7 900 000-00-00" (input)="onPhone($event)">
             </div>
             <button type="button" class="cont" (click)="requestCode()">Получить код</button>
@@ -184,7 +184,7 @@ import { copyText } from '../../core/share-link';
               <div class="frow">
                 <label class="fld" [class.err]="touched() && !d().passport">
                   <span>Серия и номер паспорта</span>
-                  <input type="text" inputmode="numeric" maxlength="15" [value]="d().passport" placeholder="0000 000000"
+                  <input type="text" inputmode="numeric" maxlength="11" [value]="d().passport" placeholder="0000 000000"
                          (input)="onPassport($event)">
                 </label>
                 <label class="fld">
@@ -397,7 +397,7 @@ import { copyText } from '../../core/share-link';
                           <label class="fld"><span>Отчество</span>
                             <input type="text" [value]="c.middleName" placeholder="Введите" (input)="setCob(ci, 'middleName', $event)"></label>
                           <label class="fld"><span>Телефон</span>
-                            <input type="tel" maxlength="18" [value]="c.phone" placeholder="+7" (input)="setCob(ci, 'phone', $event)"></label>
+                            <input type="tel" maxlength="16" [value]="c.phone" placeholder="+7" (input)="setCob(ci, 'phone', $event)"></label>
                         </div>
                         <button type="button" class="rmcob" (click)="removeCoborrower(ci)">Удалить</button>
                       </div>
