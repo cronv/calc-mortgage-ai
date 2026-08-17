@@ -316,7 +316,7 @@ import { copyText } from '../../core/share-link';
                   <app-suggest-input label="" placeholder="Начните вводить адрес"
                     [value]="d().orgAddress" [provider]="addressProvider" (valueChange)="set('orgAddress', $event)" /></label>
                 <div class="frow">
-                  <label class="fld"><span>ИНН</span>
+                  <label class="fld" [class.err]="touched() && d().inn !== '' && !validateInn(d().inn)"><span>ИНН</span>
                     <input type="text" inputmode="numeric" [value]="d().inn" placeholder="0000000000 или 000000000000"
                            (input)="onInn($event)"></label>
 
@@ -439,7 +439,7 @@ import { copyText } from '../../core/share-link';
                   <input type="text" inputmode="numeric" [value]="money(d().creditPayments) || '0 ₽'"
                          (input)="setMoney('creditPayments', $event)">
                 </label>
-                <label class="fld">
+                <label class="fld" [class.err]="touched() && d().snils !== '' && !validateSnils(d().snils)">
                   <span>СНИЛС</span>
                   <input type="text" inputmode="numeric" [value]="d().snils" placeholder="000-000-000 00"
                          (input)="onSnils($event)">
@@ -730,15 +730,18 @@ export class ApplicationWizardComponent {
 
   /** Маска для ИНН: 10 или 12 цифр (используем сервис валидации), валидация по контрольным суммам */
   onInn(e: Event): void {
-    const raw = this.validation.cleanDigits(this.val(e)).slice(0, 12);
-    // Разрешаем ввод до 12 цифр, валидация происходит при отправке
-    this.set('inn', raw);
+    const raw = this.validation.cleanDigits(this.val(e));
+    // Ограничиваем ввод до 12 цифр максимум
+    const limited = raw.slice(0, 12);
+    this.set('inn', limited);
   }
 
   /** Маска для СНИЛС: 000-000-000 00 (используем сервис валидации), валидация по контрольной сумме */
   onSnils(e: Event): void {
-    const raw = this.validation.cleanDigits(this.val(e)).slice(0, 11);
-    const out = this.validation.formatSnils(raw);
+    const raw = this.validation.cleanDigits(this.val(e));
+    // Ограничиваем ввод до 11 цифр максимум
+    const limited = raw.slice(0, 11);
+    const out = this.validation.formatSnils(limited);
     this.set('snils', out);
   }
 
@@ -761,8 +764,10 @@ export class ApplicationWizardComponent {
         && d.income > 0 && (d.email === '' || this.emailValid());
       case 's3': return d.passport !== '' && d.birthDate !== '' && d.regAddress !== '';
       case 's4': return d.employment !== '' && d.experience !== ''
-        && (!this.isWorking() || d.orgName !== '');
-      case 's5': return d.marital !== '' && d.education !== '';
+        && (!this.isWorking() || d.orgName !== '')
+        && (d.inn === '' || this.validateInn(d.inn));
+      case 's5': return d.marital !== '' && d.education !== ''
+        && (d.snils === '' || this.validateSnils(d.snils));
       default: return true;
     }
   }

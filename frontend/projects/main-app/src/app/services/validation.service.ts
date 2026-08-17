@@ -195,24 +195,31 @@ export class ValidationService {
 
   /**
    * Форматирование даты: дд.мм.гггг с автоматическими точками.
+   * При удалении символов корректно обрабатывает точки.
+   * Использует регулярные выражения для чистоты кода.
    * 
    * @param date - Дата (только цифры)
    * @returns Отформатированная строка
    */
   formatDate(date: string): string {
     const digits = this.cleanDigits(date).slice(0, 8);
-    let out = '';
     
-    if (digits.length >= 2) {
-      out = `${digits.slice(0, 2)}.${digits.slice(2, 4)}`;
-    } else if (digits.length === 1) {
-      out = digits;
-    }
-    if (digits.length >= 4) {
-      out = `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4, 8)}`;
+    // Пустая строка
+    if (!digits) {
+      return '';
     }
     
-    return out;
+    // Формируем шаблон ДД.ММ.ГГГГ, затем обрезаем лишние точки
+    const template = digits
+      .split('')
+      .map((d, i) => {
+        if (i === 2 || i === 4) return '.' + d;
+        return d;
+      })
+      .join('');
+    
+    // Удаляем trailing точку, если она есть в конце
+    return template.replace(/\.+$/, '');
   }
 
   /**
