@@ -148,7 +148,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       }
       .chead { display: grid; grid-template-columns: 38px 1fr auto; grid-template-areas: "logo bname cpay"; gap: 12px; align-items: start; }
       .logo {
-        width: 38px; height: 38px; border-radius: 10px; background: #1B75BB; color: #fff;
+        width: 38px; height: 38px; border-radius: 10px; background: #fff; color: #fff;
         font-weight: 700; font-size: 16px; display: flex; align-items: center;
         justify-content: center; grid-area: logo; overflow: hidden;
       }

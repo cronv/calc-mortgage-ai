@@ -442,7 +442,7 @@ import { copyText } from '../../core/share-link';
                 <label class="fld" [class.err]="touched() && d().snils !== '' && !validateSnils(d().snils)">
                   <span>СНИЛС</span>
                   <input type="text" inputmode="numeric" maxlength="14" [value]="d().snils" placeholder="000-000-000 00"
-                         (input)="onSnils($event)">
+                         (input)="onSnils($event)" (keydown)="allowDigitsOnly($event)">
                 </label>
               </div>
             }
@@ -758,6 +758,7 @@ export class ApplicationWizardComponent {
     const limited = raw.slice(0, 11);
     const out = this.validation.formatSnils(limited);
     this.set('snils', out);
+    (e.target as HTMLInputElement).value = limited;
   }
 
   /** Валидация ИНН через сервис */
