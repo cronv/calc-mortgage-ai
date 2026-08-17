@@ -442,7 +442,7 @@ import { copyText } from '../../core/share-link';
                 <label class="fld" [class.err]="touched() && d().snils !== '' && !validateSnils(d().snils)">
                   <span>СНИЛС</span>
                   <input type="text" inputmode="numeric" maxlength="14" [value]="d().snils" placeholder="000-000-000 00"
-                         (input)="onSnils($event)">
+                         (input)="onSnils($event)" (keydown)="onSnilsKeydown($event)">
                 </label>
               </div>
             }
@@ -743,6 +743,19 @@ export class ApplicationWizardComponent {
     const limited = raw.slice(0, 11);
     const out = this.validation.formatSnils(limited);
     this.set('snils', out);
+  }
+
+  /** Блокировка ввода нецифровых символов в поле СНИЛС */
+  onSnilsKeydown(e: KeyboardEvent): void {
+    // Разрешаем: цифры, Backspace, Delete, Tab, Arrow keys
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight'];
+    if (allowedKeys.includes(e.key)) {
+      return;
+    }
+    // Блокируем всё, что не является цифрой
+    if (!/^\d$/.test(e.key)) {
+      e.preventDefault();
+    }
   }
 
   /** Валидация ИНН через сервис */
