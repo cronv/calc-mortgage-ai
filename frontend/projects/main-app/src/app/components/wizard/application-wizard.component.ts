@@ -758,6 +758,7 @@ export class ApplicationWizardComponent {
     const limited = raw.slice(0, 11);
     const out = this.validation.formatSnils(limited);
     this.set('snils', out);
+    (e.target as HTMLInputElement).value = limited;
   }
 
   /** Валидация ИНН через сервис */
