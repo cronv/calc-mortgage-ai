@@ -738,7 +738,7 @@ export class ApplicationWizardComponent {
 
   /** Маска для СНИЛС: 000-000-000 00 (используем сервис валидации), валидация по контрольной сумме */
   onSnils(e: Event): void {
-    const raw = this.validation.cleanDigits(this.val(e));
+    const raw = this.val(e).replace(/\D/g, '');
     // Ограничиваем ввод до 11 цифр максимум
     const limited = raw.slice(0, 11);
     const out = this.validation.formatSnils(limited);
