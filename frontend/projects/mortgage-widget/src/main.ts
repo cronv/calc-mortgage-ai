@@ -558,7 +558,7 @@ function mount(host: HTMLElement, cfg: WidgetConfig): void {
       <div class="card">
         <div class="chead">
           <div class="logo">${logoContent}</div>
-          <div class="bname"><b></b><span>Вторичное жильё</span></div>
+          <div class="bname"><b></b><span>${o.program_name}</span></div>
           <div class="cpay"><b>${fmt(o.monthly_payment)} ₽/мес</b><span>от ${o.calculated_rate}%</span></div>
         </div>
         <div class="cfoot">
