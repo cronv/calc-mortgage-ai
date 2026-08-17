@@ -43,7 +43,7 @@ const PAGE = 6;
         @for (o of shown(); track $index) {
           <div class="ocard">
               <div class="obank">
-                  <div class="ologo" [style.background]="o.bank_logo_url ? '#EEF3F8' : logoBg(o.bank_name)">
+                  <div class="ologo" [style.background]="o.bank_logo_url ? '#fff' : logoBg(o.bank_name)">
                       @if (o.bank_logo_url) {
                           <img [src]="o.bank_logo_url" [alt]="o.bank_name" class="ologo-img" />
                       } @else {
