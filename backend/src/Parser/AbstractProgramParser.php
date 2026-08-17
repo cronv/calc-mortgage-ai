@@ -100,7 +100,7 @@ abstract class AbstractProgramParser
             return 'MILITARY';
         }
         // IT-ипотека
-        if (str_contains($nameLower, 'it') || str_contains($nameLower, 'ит-') || str_contains($nameLower, 'айти') || str_contains($nameLower, 'для it')) {
+        if (str_contains($nameLower, 'it') || str_contains($nameLower, 'ит ') || str_contains($nameLower, 'ит-') || str_contains($nameLower, 'айти') || str_contains($nameLower, 'для it')) {
             return 'IT';
         }
         // Дальневосточная ипотека
