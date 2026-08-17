@@ -1,1 +1,3 @@
-Nothing should be ignored since the changes only include source code files (.ts files) and no build artifacts, dependencies, or temporary files.
+(frontend/projects/main-app/src/app/components/wizard/application-wizard.component.ts is a source code file, and there are no build artifacts, dependencies, or temporary files in the changes)
+
+(empty)
