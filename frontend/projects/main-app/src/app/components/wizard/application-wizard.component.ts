@@ -184,13 +184,13 @@ import { copyText } from '../../core/share-link';
               <div class="frow">
                 <label class="fld" [class.err]="touched() && !d().passport">
                   <span>Серия и номер паспорта</span>
-                  <input type="text" inputmode="numeric" maxlength="11" [value]="d().passport" placeholder="0000 000000"
-                         (input)="onPassport($event)">
+                  <input type="text" inputmode="numeric" maxlength="10" [value]="d().passport" placeholder="0000 000000"
+                         (input)="onPassport($event)" (keydown)="allowDigitsOnly($event)">
                 </label>
                 <label class="fld">
                   <span>Код подразделения</span>
-                  <input type="text" inputmode="numeric" maxlength="7" [value]="d().passportCode" placeholder="000-000"
-                         (input)="onPassportCode($event)">
+                  <input type="text" inputmode="numeric" maxlength="6" [value]="d().passportCode" placeholder="000-000"
+                         (input)="onPassportCode($event)" (keydown)="allowDigitsOnly($event)">
                 </label>
               </div>
               <div class="frow">
@@ -318,7 +318,7 @@ import { copyText } from '../../core/share-link';
                 <div class="frow">
                   <label class="fld" [class.err]="touched() && d().inn !== '' && !validateInn(d().inn)"><span>ИНН</span>
                     <input type="text" inputmode="numeric" maxlength="12" [value]="d().inn" placeholder="0000000000 или 000000000000"
-                           (input)="onInn($event)"></label>
+                           (input)="onInn($event)" (keydown)="allowDigitsOnly($event)"></label>
 
                   <!-- Зарплатный банк: список с логотипами и поиском -->
                   <div class="fld bankfld" [class.open]="bankOpen()">
@@ -679,6 +679,18 @@ export class ApplicationWizardComponent {
   chk(e: Event): boolean { return (e.target as HTMLInputElement).checked; }
   money(v: number): string { return v > 0 ? Math.round(v).toLocaleString('ru-RU') : ''; }
 
+  /** Разрешает ввод только цифр и управляющих клавиш (Backspace, Tab, стрелки) */
+  allowDigitsOnly(e: KeyboardEvent): void {
+    const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Delete'];
+    if (allowedKeys.includes(e.key)) {
+      return;
+    }
+    // Разрешаем только цифры от 0 до 9
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+    }
+  }
+
   set(key: string, value: unknown): void {
     this.flow.patch({ [key]: value } as never);
     if (key === 'propertyType') {
@@ -712,6 +724,7 @@ export class ApplicationWizardComponent {
     const raw = this.validation.cleanDigits(this.val(e)).slice(0, 10);
     const out = this.validation.formatPassport(raw);
     this.set('passport', out);
+    (e.target as HTMLInputElement).value = out;
   }
 
   /** Маска для кода подразделения: 000-000 (используем сервис валидации) */
@@ -719,6 +732,7 @@ export class ApplicationWizardComponent {
     const raw = this.validation.cleanDigits(this.val(e)).slice(0, 6);
     const out = this.validation.formatPassportCode(raw);
     this.set('passportCode', out);
+    (e.target as HTMLInputElement).value = out;
   }
 
   /** Маска для даты: дд.мм.гггг с автоматическими точками (используем сервис валидации) */
@@ -734,6 +748,7 @@ export class ApplicationWizardComponent {
     // Ограничиваем ввод до 12 цифр максимум
     const limited = raw.slice(0, 12);
     this.set('inn', limited);
+    (e.target as HTMLInputElement).value = limited;
   }
 
   /** Маска для СНИЛС: 000-000-000 00 (используем сервис валидации), валидация по контрольной сумме */
