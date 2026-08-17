@@ -3,6 +3,7 @@ import {
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ApplicationFlowService, Coborrower } from '../../services/application-flow.service';
+import { ValidationService } from '../../services/validation.service';
 import { SuggestInputComponent } from './suggest-input.component';
 import {
   PROPERTY_TYPES, TERM_UNITS, EMPLOYMENT_TYPES, STAFF_COUNT, ORG_TYPES, INDUSTRIES,
@@ -183,20 +184,20 @@ import { copyText } from '../../core/share-link';
               <div class="frow">
                 <label class="fld" [class.err]="touched() && !d().passport">
                   <span>Серия и номер паспорта</span>
-                  <input type="text" inputmode="numeric" [value]="d().passport" placeholder="Введите"
-                         (input)="set('passport', val($event))">
+                  <input type="text" inputmode="numeric" [value]="d().passport" placeholder="0000 000000"
+                         (input)="onPassport($event)">
                 </label>
                 <label class="fld">
                   <span>Код подразделения</span>
-                  <input type="text" inputmode="numeric" [value]="d().passportCode" placeholder="Введите"
-                         (input)="set('passportCode', val($event))">
+                  <input type="text" inputmode="numeric" [value]="d().passportCode" placeholder="000-000"
+                         (input)="onPassportCode($event)">
                 </label>
               </div>
               <div class="frow">
                 <label class="fld">
                   <span>Дата выдачи</span>
                   <input type="text" [value]="d().passportDate" placeholder="дд.мм.гггг"
-                         (input)="set('passportDate', val($event))">
+                         (input)="onDate($event); set('passportDate', val($event))">
                 </label>
                 <label class="fld">
                   <span>Место рождения</span>
@@ -213,7 +214,7 @@ import { copyText } from '../../core/share-link';
                 <label class="fld" [class.err]="touched() && !d().birthDate">
                   <span>Дата рождения</span>
                   <input type="text" [value]="d().birthDate" placeholder="дд.мм.гггг"
-                         (input)="set('birthDate', val($event))">
+                         (input)="onDate($event); set('birthDate', val($event))">
                 </label>
                 <div></div>
               </div>
@@ -243,7 +244,8 @@ import { copyText } from '../../core/share-link';
               <div class="frow">
                 <label class="fld">
                   <span>Дата регистрации</span>
-                  <input type="text" [value]="d().regDate" placeholder="дд.мм.гггг" (input)="set('regDate', val($event))">
+                  <input type="text" [value]="d().regDate" placeholder="дд.мм.гггг"
+                         (input)="onDate($event); set('regDate', val($event))">
                 </label>
                 <div></div>
               </div>
@@ -257,7 +259,8 @@ import { copyText } from '../../core/share-link';
                 <div class="frow">
                   <label class="fld">
                     <span>Дата проживания</span>
-                    <input type="text" [value]="d().liveDate" placeholder="дд.мм.гггг" (input)="set('liveDate', val($event))">
+                    <input type="text" [value]="d().liveDate" placeholder="дд.мм.гггг"
+                           (input)="onDate($event); set('liveDate', val($event))">
                   </label>
                   <div></div>
                 </div>
@@ -310,10 +313,12 @@ import { copyText } from '../../core/share-link';
                     </select></label>
                 </div>
                 <label class="fld"><span>Адрес организации</span>
-                  <input type="text" [value]="d().orgAddress" placeholder="Введите" (input)="set('orgAddress', val($event))"></label>
+                  <app-suggest-input label="" placeholder="Начните вводить адрес"
+                    [value]="d().orgAddress" [provider]="addressProvider" (valueChange)="set('orgAddress', $event)" /></label>
                 <div class="frow">
                   <label class="fld"><span>ИНН</span>
-                    <input type="text" inputmode="numeric" [value]="d().inn" placeholder="Введите" (input)="set('inn', val($event))"></label>
+                    <input type="text" inputmode="numeric" [value]="d().inn" placeholder="0000000000 или 000000000000"
+                           (input)="onInn($event)"></label>
 
                   <!-- Зарплатный банк: список с логотипами и поиском -->
                   <div class="fld bankfld" [class.open]="bankOpen()">
@@ -436,8 +441,8 @@ import { copyText } from '../../core/share-link';
                 </label>
                 <label class="fld">
                   <span>СНИЛС</span>
-                  <input type="text" inputmode="numeric" [value]="d().snils" placeholder="Введите"
-                         (input)="set('snils', val($event))">
+                  <input type="text" inputmode="numeric" [value]="d().snils" placeholder="000-000-000 00"
+                         (input)="onSnils($event)">
                 </label>
               </div>
             }
@@ -610,6 +615,7 @@ import { copyText } from '../../core/share-link';
 })
 export class ApplicationWizardComponent {
   readonly flow = inject(ApplicationFlowService);
+  readonly validation = inject(ValidationService);
 
   // Справочники
   readonly propertyTypes = PROPERTY_TYPES;
@@ -697,6 +703,53 @@ export class ApplicationWizardComponent {
     if (dg.length >= 7) out += '-' + dg.slice(7, 9);
     if (dg.length >= 9) out += '-' + dg.slice(9, 11);
     this.set('phone', out);
+  }
+
+  // ---- маски на регулярных выражениях (быстрая валидация) ----
+  
+  /** Маска для серии и номера паспорта: 0000 000000 (используем сервис валидации) */
+  onPassport(e: Event): void {
+    const raw = this.validation.cleanDigits(this.val(e)).slice(0, 10);
+    const out = this.validation.formatPassport(raw);
+    this.set('passport', out);
+  }
+
+  /** Маска для кода подразделения: 000-000 (используем сервис валидации) */
+  onPassportCode(e: Event): void {
+    const raw = this.validation.cleanDigits(this.val(e)).slice(0, 6);
+    const out = this.validation.formatPassportCode(raw);
+    this.set('passportCode', out);
+  }
+
+  /** Маска для даты: дд.мм.гггг с автоматическими точками (используем сервис валидации) */
+  onDate(e: Event): void {
+    const raw = this.validation.cleanDigits(this.val(e)).slice(0, 8);
+    const out = this.validation.formatDate(raw);
+    (e.target as HTMLInputElement).value = out;
+  }
+
+  /** Маска для ИНН: 10 или 12 цифр (используем сервис валидации), валидация по контрольным суммам */
+  onInn(e: Event): void {
+    const raw = this.validation.cleanDigits(this.val(e)).slice(0, 12);
+    // Разрешаем ввод до 12 цифр, валидация происходит при отправке
+    this.set('inn', raw);
+  }
+
+  /** Маска для СНИЛС: 000-000-000 00 (используем сервис валидации), валидация по контрольной сумме */
+  onSnils(e: Event): void {
+    const raw = this.validation.cleanDigits(this.val(e)).slice(0, 11);
+    const out = this.validation.formatSnils(raw);
+    this.set('snils', out);
+  }
+
+  /** Валидация ИНН через сервис */
+  validateInn(inn: string): boolean {
+    return this.validation.validateInn(inn);
+  }
+
+  /** Валидация СНИЛС через сервис */
+  validateSnils(snils: string): boolean {
+    return this.validation.validateSnils(snils);
   }
 
   // ---- шаги ----
