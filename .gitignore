@@ -1,1 +1,52 @@
-Nothing should be ignored based on the provided file changes. The modified file is a TypeScript source file (.ts) which is core source code that should be tracked in version control. No build artifacts, dependencies, or temporary files are present in the changes.
+```
+# Dependencies
+node_modules/
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+.env
+
+# Build outputs
+dist/
+build/
+*.min.js
+*.min.css
+bundle.js
+coverage/
+htmlcov/
+.coverage
+
+# IDE
+.vs/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+.nyc_output/
+coverage.xml
+```
