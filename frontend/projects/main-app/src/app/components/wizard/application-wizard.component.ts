@@ -184,12 +184,12 @@ import { copyText } from '../../core/share-link';
               <div class="frow">
                 <label class="fld" [class.err]="touched() && !d().passport">
                   <span>Серия и номер паспорта</span>
-                  <input type="text" inputmode="numeric" maxlength="10" [value]="d().passport" placeholder="0000 000000"
+                  <input type="text" inputmode="numeric" maxlength="11" [value]="d().passport" placeholder="0000 000000"
                          (input)="onPassport($event)" (keydown)="allowDigitsOnly($event)">
                 </label>
                 <label class="fld">
                   <span>Код подразделения</span>
-                  <input type="text" inputmode="numeric" maxlength="6" [value]="d().passportCode" placeholder="000-000"
+                  <input type="text" inputmode="numeric" maxlength="7" [value]="d().passportCode" placeholder="000-000"
                          (input)="onPassportCode($event)" (keydown)="allowDigitsOnly($event)">
                 </label>
               </div>
