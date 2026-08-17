@@ -187,7 +187,7 @@ import { copyText } from '../../core/share-link';
                   <input type="text" inputmode="numeric" maxlength="11" [value]="d().passport" placeholder="0000 000000"
                          (input)="onPassport($event)" (keydown)="allowDigitsOnly($event)">
                 </label>
-                <label class="fld">
+                <label class="fld" [class.err]="touched() && !d().passportCode">
                   <span>Код подразделения</span>
                   <input type="text" inputmode="numeric" maxlength="7" [value]="d().passportCode" placeholder="000-000"
                          (input)="onPassportCode($event)" (keydown)="allowDigitsOnly($event)">
@@ -316,7 +316,7 @@ import { copyText } from '../../core/share-link';
                   <app-suggest-input label="" placeholder="Начните вводить адрес"
                     [value]="d().orgAddress" [provider]="addressProvider" (valueChange)="set('orgAddress', $event)" /></label>
                 <div class="frow">
-                  <label class="fld" [class.err]="touched() && d().inn !== '' && !validateInn(d().inn)"><span>ИНН</span>
+                  <label class="fld" [class.err]="touched() && !d().inn"><span>ИНН</span>
                     <input type="text" inputmode="numeric" maxlength="12" [value]="d().inn" placeholder="0000000000 или 000000000000"
                            (input)="onInn($event)" (keydown)="allowDigitsOnly($event)"></label>
 
@@ -439,7 +439,7 @@ import { copyText } from '../../core/share-link';
                   <input type="text" inputmode="numeric" [value]="money(d().creditPayments) || '0 ₽'"
                          (input)="setMoney('creditPayments', $event)">
                 </label>
-                <label class="fld" [class.err]="touched() && d().snils !== '' && !validateSnils(d().snils)">
+                <label class="fld" [class.err]="touched() && !d().snils">
                   <span>СНИЛС</span>
                   <input type="text" inputmode="numeric" maxlength="14" [value]="d().snils" placeholder="000-000-000 00"
                          (input)="onSnils($event)" (keydown)="allowDigitsOnly($event)">
@@ -779,12 +779,12 @@ export class ApplicationWizardComponent {
       case 's1': return d.propertyType !== '' && d.cost > 0 && d.termValue > 0;
       case 's2': return d.city !== '' && d.lastName !== '' && d.firstName !== ''
         && d.income > 0 && (d.email === '' || this.emailValid());
-      case 's3': return d.passport !== '' && d.birthDate !== '' && d.regAddress !== '';
+      case 's3': return d.passport !== '' && d.passportCode !== '' && d.birthDate !== '' && d.regAddress !== '';
       case 's4': return d.employment !== '' && d.experience !== ''
         && (!this.isWorking() || d.orgName !== '')
-        && (d.inn === '' || this.validateInn(d.inn));
+        && d.inn !== '' && this.validateInn(d.inn);
       case 's5': return d.marital !== '' && d.education !== ''
-        && (d.snils === '' || this.validateSnils(d.snils));
+        && d.snils !== '' && this.validateSnils(d.snils);
       default: return true;
     }
   }
