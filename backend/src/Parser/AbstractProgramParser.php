@@ -92,7 +92,7 @@ abstract class AbstractProgramParser
         $nameLower = mb_strtolower($name);
 
         // Семейная ипотека
-        if (str_contains($nameLower, 'семейн') || str_contains($nameLower, 'для семьи') || str_contains($nameLower, 'семья')) {
+        if (str_contains($nameLower, 'семей') || str_contains($nameLower, 'для семьи') || str_contains($nameLower, 'семья')) {
             return 'FAMILY';
         }
         // Военная ипотека
