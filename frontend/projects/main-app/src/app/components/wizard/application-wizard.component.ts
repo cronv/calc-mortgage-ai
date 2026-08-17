@@ -13,14 +13,6 @@ import {
 import { exportAnketaPdf, exportAnketaDocx } from '../../core/anketa-export';
 import { copyText } from '../../core/share-link';
 
-/** Детеминированный цвет плашки-логотипа по имени банка. */
-function logoBg(name: string): string {
-  const palette = ['#1B75BB', '#D6423A', '#0F6E56', '#7F77DD', '#BA7517', '#232F3D'];
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  return palette[h % palette.length];
-}
-
 /**
  * Мастер «Подать заявку» из 5 шагов (по макетам):
  * 1 — параметры кредита; затем авторизация (телефон → код из СМС);
@@ -625,6 +617,14 @@ function logoBg(name: string): string {
 export class ApplicationWizardComponent {
   readonly flow = inject(ApplicationFlowService);
   readonly validation = inject(ValidationService);
+
+  /** Детерминированный цвет плашки-логотипа по имени банка. */
+  logoBg(name: string): string {
+    const palette = ["#1B75BB", "#D6423A", "#0F6E56", "#7F77DD", "#BA7517", "#232F3D"];
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    return palette[h % palette.length];
+  }
 
   // Справочники
   readonly propertyTypes = PROPERTY_TYPES;
