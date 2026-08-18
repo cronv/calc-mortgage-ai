@@ -50,8 +50,8 @@ server {
     server_name ~^(?<subdomain>[a-z0-9_-]+)\.ваш-домен\.ru$;
 
     # Пути к сертификатам (должны лежать в ./docker/nginx/ssl/)
-    ssl_certificate /etc/nginx/ssl/fullchain.pem;
-    ssl_certificate_key /etc/nginx/ssl/privkey.pem;
+    ssl_certificate ssl/fullchain.pem;
+    ssl_certificate_key ssl/privkey.pem;
     
     # Современные SSL настройки (TLS 1.2/1.3)
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -108,8 +108,8 @@ server {
     server_name ваш-домен.ru www.ваш-домен.ru; # ЗАМЕНИТЕ НА ВАШ ДОМЕН
 
     # Пути к сертификатам (должны лежать в ./docker/nginx/ssl/)
-    ssl_certificate /etc/nginx/ssl/fullchain.pem;
-    ssl_certificate_key /etc/nginx/ssl/privkey.pem;
+    ssl_certificate ssl/fullchain.pem;
+    ssl_certificate_key ssl/privkey.pem;
     
     # Современные SSL настройки (TLS 1.2/1.3)
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -170,8 +170,8 @@ server {
     http2 on;
     server_name _;
     
-    ssl_certificate /etc/nginx/ssl/fullchain.pem;
-    ssl_certificate_key /etc/nginx/ssl/privkey.pem;
+    ssl_certificate ssl/fullchain.pem;
+    ssl_certificate_key ssl/privkey.pem;
     
     # Современные SSL настройки
     ssl_protocols TLSv1.2 TLSv1.3;
