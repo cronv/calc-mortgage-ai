@@ -102,6 +102,8 @@ services:
       - ./backend/public:/var/www/html/public:ro
       - ./frontend/dist/main-app/browser:/var/www/main:ro
       - ./frontend/dist/mortgage-widget/browser:/var/www/widget:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks: [mortgage_net]
 
 networks:
