@@ -4,3 +4,4 @@ nginx/ssl/privkey.pem
 
 # Nginx default config with local customizations
 nginx/default.conf
+nginx/server*[0-9].conf
