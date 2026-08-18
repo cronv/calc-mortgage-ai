@@ -84,7 +84,7 @@ server {
 
     # ---------- API → Symfony front controller (PHP-FPM) ----------
     # Доступно для всех поддоменов
-    include /etc/nginx/api_location.conf;
+    include api_location.conf;
 
     # JS-скрипты с CORS заголовками
     location ~* ^(.+\.js)$ {
@@ -135,7 +135,7 @@ server {
     index index.html;
 
     # ---------- API → Symfony front controller (PHP-FPM) ----------
-    include /etc/nginx/api_location.conf;
+    include api_location.conf;
 
     location ~ ^/index\.php(/|$) {
         fastcgi_pass php_fpm;
