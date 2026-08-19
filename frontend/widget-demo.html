@@ -15,7 +15,7 @@
 <body>
   <h1>Встраивание калькулятора на сайт партнёра</h1>
   <p>Одна строка кода подключает виджет:</p>
-  <p><code>&lt;script src="/mortgage-widget.js" data-partner="demo" data-color-primary="#FEBD69"&gt;&lt;/script&gt;</code></p>
+  <p><code>&lt;script src="https://widget.<span id="widget-host"></span>/mortgage-widget.js" data-partner="demo" data-color-primary="#FEBD69" data-api-base="https://api.<span id="api-host"></span>"&gt;&lt;/script&gt;</code></p>
   <hr>
   <h2 style="font-size:18px">Живой пример</h2>
   <p style="color:#6A6A6A;font-size:14px">Виджет «Подбор ипотеки» подстраивается под ширину контейнера (от 375px). Слева — узкая колонка (320px), ниже — на всю ширину.</p>
@@ -35,6 +35,13 @@
   </div>
 
   <script>
+    // Автоматическая подстановка текущего хоста для демонстрации
+    (function(){
+      var host = window.location.host || 'localhost:4200';
+      document.getElementById('widget-host').textContent = host;
+      document.getElementById('api-host').textContent = host;
+    })();
+    
     // Второй экземпляр в широком контейнере (демонстрация container queries).
     (function(){
       var s=document.createElement('script');

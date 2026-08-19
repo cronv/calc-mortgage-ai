@@ -1,42 +1,12 @@
-```gitignore
-# Dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnp
-.pnp.js
-
-# Production builds
-/dist
-/build
-/out
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-.DS_Store
-Thumbs.db
-
-# Coverage directory used by tools like istanbul
-coverage/
-.nyc_output/
-
-# TypeScript cache
-*.tsbuildinfo
-```
+# Examples
+Input:
+### Added files:
+['frontend/widget-demo.html']
+### Deleted files:
+[]
+### Modified files:
+['frontend/widget-demo.html']
+### current .gitignore Content
+(empty)
+Expected Output:
+(empty — output nothing)
