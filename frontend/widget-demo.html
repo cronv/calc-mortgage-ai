@@ -15,31 +15,51 @@
 <body>
   <h1>Встраивание калькулятора на сайт партнёра</h1>
   <p>Одна строка кода подключает виджет:</p>
-  <p><code>&lt;script src="/mortgage-widget.js" data-partner="demo" data-color-primary="#FEBD69"&gt;&lt;/script&gt;</code></p>
+  <p><code>&lt;script src="https://<span id="widget-host"></span>/mortgage-widget.js" data-partner="demo" data-color-primary="#FEBD69" data-api-base="https://<span id="api-host"></span>"&gt;&lt;/script&gt;</code></p>
   <hr>
   <h2 style="font-size:18px">Живой пример</h2>
   <p style="color:#6A6A6A;font-size:14px">Виджет «Подбор ипотеки» подстраивается под ширину контейнера (от 375px). Слева — узкая колонка (320px), ниже — на всю ширину.</p>
-
+  
   <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
     <div style="width:320px;max-width:100%">
       <div style="font-size:13px;color:#6A6A6A;margin-bottom:8px">Узкая колонка (320px)</div>
       <div id="mortgage-widget-demo">
-        <script src="/mortgage-widget.js" data-partner="demo" data-color-primary="#FEBD69"></script>
+        <!-- Виджет загружается динамически через JS -->
       </div>
     </div>
   </div>
-
+  
   <div style="margin-top:32px">
     <div style="font-size:13px;color:#6A6A6A;margin-bottom:8px">На всю ширину</div>
     <div id="mortgage-widget-wide"></div>
   </div>
-
+  
   <script>
+    // Автоматическая подстановка текущего хоста для демонстрации
+    (function(){
+      var host = window.location.host || 'localhost:4200';
+      document.getElementById('widget-host').textContent = host;
+      document.getElementById('api-host').textContent = host;
+    })();
+    
+    // Динамическая загрузка виджета с правильным префиксом https://widget.
+    (function(){
+      var host = window.location.host || 'localhost:4200';
+      var s=document.createElement('script');
+      s.src='https://widget.' + host + '/mortgage-widget.js';
+      s.setAttribute('data-partner','demo');
+      s.setAttribute('data-color-primary','#FEBD69');
+      s.setAttribute('data-api-base','https://api.' + host);
+      document.getElementById('mortgage-widget-demo').appendChild(s);
+    })();
+    
     // Второй экземпляр в широком контейнере (демонстрация container queries).
     (function(){
+      var host = window.location.host || 'localhost:4200';
       var s=document.createElement('script');
-      s.src='/mortgage-widget.js';
+      s.src='https://widget.' + host + '/mortgage-widget.js';
       s.setAttribute('data-partner','demo-wide');
+      s.setAttribute('data-api-base','https://api.' + host);
       document.getElementById('mortgage-widget-wide').appendChild(s);
     })();
     window.addEventListener('message', function(e){
