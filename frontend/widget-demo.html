@@ -46,10 +46,10 @@
     (function(){
       var host = window.location.host || 'localhost:4200';
       var s=document.createElement('script');
-      s.src='https://widget.' + host + '/mortgage-widget.js';
+      s.src='https://' + host + '/mortgage-widget.js';
       s.setAttribute('data-partner','demo');
       s.setAttribute('data-color-primary','#FEBD69');
-      s.setAttribute('data-api-base','https://api.' + host);
+      s.setAttribute('data-api-base','https://widget.' + host);
       document.getElementById('mortgage-widget-demo').appendChild(s);
     })();
     
