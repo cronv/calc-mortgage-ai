@@ -56,7 +56,7 @@ make up
 Одна строка на сайте партнёра:
 
 ```html
-<script src="https://ВАШ_ХОСТ/widget/mortgage-widget.js"
+<script src="https://widget.ВАШ_ХОСТ.ВАША_ЗОНА/widget/mortgage-widget.js"
         data-partner="demo"
         data-color-primary="#FEBD69"></script>
 ```
