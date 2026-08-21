@@ -17,6 +17,7 @@ venv/
 .env
 .env.local
 .env.*
+docker-compose.override.yml
 
 # Build directories
 dist/
