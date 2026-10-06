@@ -3,7 +3,7 @@
 Публичный калькулятор (banki.ru-style) + встраиваемый виджет для сайтов партнёров.
 Единый источник данных (MySQL) и единый API подбора предложений для обоих калькуляторов.
 
-**Стек:** PHP 8.4 / Symfony 7.2 · Angular 20.2 (zoneless, signals, esbuild) · MySQL 8.4 · Nginx · Docker.
+**Стек:** PHP 8.4 / Symfony 7.2 · Angular 20.2 (zoneless, signals, esbuild) · MySQL 8.4 · Nginx (HTTP/2 + HTTP/3) · Docker.
 
 ## Возможности калькулятора
 
@@ -93,6 +93,13 @@ docker-compose.yml, Makefile
 
 ## Замечания по продакшену
 
+- Nginx работает на образе [`macbre/nginx-http3`](https://hub.docker.com/r/macbre/nginx-http3) (nginx + QUIC поверх GnuTLS):
+  HTTP/2 по TCP и HTTP/3 по UDP на 443 порту одновременно. Браузер автоматически «перепрыгивает» на h3
+  по заголовку `Alt-Svc: h3=":443"` из HTTPS-ответа.
+- **Обязательно откройте UDP 443** в фаерволе хоста/облака (`iptables`/`ufw`/security group) — без него
+  HTTP/3 молча не работает, всё останется на HTTP/2 (это безопасный фолбэк).
+- Сертификат должен быть валидным для всех доменов (для поддоменов — wildcard `*.domain.ru` или SAN-сертификат);
+  HTTP/3 требует TLS 1.3 (включён; поддерживается этим образом).
 - CORS в `docker/nginx/default.conf` сейчас отражает любой Origin — для прода замените на белый список доменов.
 - Фикстуры грузятся только в `dev`/`test` и только если таблица `bank_products` пуста.
 - Парсер программ: `make bash` → `php bin/console parser:programs` (при недоступности источника подхватывает демо-набор).
