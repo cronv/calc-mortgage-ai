@@ -100,8 +100,8 @@ services:
       - ./docker/nginx/server1.conf:/etc/nginx/server1.conf:ro # s1
       - ./docker/nginx/server2.conf:/etc/nginx/server2.conf:ro # s2
       - ./docker/nginx/server3.conf:/etc/nginx/server3.conf:ro # s3
-      - ./docker/nginx/server3.conf:/etc/nginx/server4.conf:ro # s4
-      - ./docker/nginx/server3.conf:/etc/nginx/server5.conf:ro # s5
+      - ./docker/nginx/server4.conf:/etc/nginx/server4.conf:ro # s4
+      - ./docker/nginx/server5.conf:/etc/nginx/server5.conf:ro # s5
       - ./docker/nginx/cors_allowed_origins.conf:/etc/nginx/cors_allowed_origins.conf:ro
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./docker/nginx/ssl:/etc/nginx/ssl:ro
