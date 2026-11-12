@@ -109,7 +109,7 @@ services:
       - ./frontend/dist/main-app/browser:/var/www/main:ro
       - ./frontend/dist/mortgage-widget/browser:/var/www/widget:ro
       - ${HOME}/Projects/rigaholiday:/var/www/rigaholiday:ro
-      - ${HOME}/Projects/zvednyi:/var/www/zvednyi:ro
+      - ${HOME}/Projects/zvezdnyi:/var/www/zvezdnyi:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks: [mortgage_net]
