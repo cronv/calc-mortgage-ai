@@ -50,6 +50,9 @@ final class ParseProgramsCommand extends Command
             $updated = 0;
 
             try {
+                $this->em
+                    ->createQuery('DELETE FROM App\Entity\BankProduct p')
+                    ->execute();
                 // Создаём генератор сущностей с дедупликацией и логикой обновления
                 $entityGenerator = $this->createEntityGenerator($parser, $new, $updated, $processedKeys);
 
