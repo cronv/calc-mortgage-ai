@@ -82,3 +82,6 @@ stop: ## Остановить без удаления
 clean: ## Удалить контейнеры, тома и сборки
 	$(COMPOSE) down -v
 	rm -rf frontend/dist frontend/node_modules backend/vendor backend/var/cache backend/var/log
+
+parse-programs:
+	$(PHP) php bin/console parser:programs --env=prod
