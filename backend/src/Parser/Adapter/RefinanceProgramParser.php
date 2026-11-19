@@ -127,17 +127,17 @@ class RefinanceProgramParser extends AbstractProgramParser
         $queryParams = [
             'pageType' => 'CALCHYPOTHEC',
             'productTypes[]' => 'mortgage_refinance',
-            'requestedAmount' => '3000000',
-            'requestedTerm' => '20',
+            'requestedAmount' => '2000000',
+            'requestedTerm' => '10',
             'requestedTermUnit' => '7', // years
-            'initialFee' => '3000000',
+            'initialFee' => '2000000',
             'sort' => 'popular',
             'order' => 'desc',
             'catalog' => 'refinansirovanie_ipoteki',
             'page' => (string) $page,
             'limit' => (string) $limit,
             'isMulti' => 'false',
-            'price' => '4000000',
+            'price' => '2000000',
             'regionId' => '4', // Москва
             'reason' => 'show_more',
         ];
