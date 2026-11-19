@@ -42,6 +42,10 @@ final class ParseProgramsCommand extends Command
         $totalUpdated = 0;
         $processedKeys = []; // Глобальный кеш для защиты от дублей
 
+        $this->em
+            ->createQuery('DELETE FROM App\Entity\BankProduct p')
+            ->execute();
+
         foreach ($this->parsers as $parser) {
             $productType = $parser->getProductType();
             $io->section(sprintf('Парсинг: %s', $productType));
@@ -50,9 +54,6 @@ final class ParseProgramsCommand extends Command
             $updated = 0;
 
             try {
-                $this->em
-                    ->createQuery('DELETE FROM App\Entity\BankProduct p')
-                    ->execute();
                 // Создаём генератор сущностей с дедупликацией и логикой обновления
                 $entityGenerator = $this->createEntityGenerator($parser, $new, $updated, $processedKeys);
 
